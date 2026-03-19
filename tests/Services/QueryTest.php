@@ -1,0 +1,66 @@
+<?php
+
+namespace Tests\Services;
+
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Plaza\Client;
+use Plaza\Core\Util;
+use Plaza\PlazaClientService\FeatureCollection;
+use Plaza\Query\SparqlResult;
+
+/**
+ * @internal
+ */
+#[CoversNothing]
+final class QueryTest extends TestCase
+{
+    protected Client $client;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $testUrl = Util::getenv('TEST_API_BASE_URL') ?: 'http://127.0.0.1:4010';
+        $client = new Client(apiKey: 'My API Key', baseUrl: $testUrl);
+
+        $this->client = $client;
+    }
+
+    #[Test]
+    public function testOverpass(): void
+    {
+        $result = $this->client->query->overpass(data: 'data');
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(FeatureCollection::class, $result);
+    }
+
+    #[Test]
+    public function testOverpassWithOptionalParams(): void
+    {
+        $result = $this->client->query->overpass(data: 'data');
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(FeatureCollection::class, $result);
+    }
+
+    #[Test]
+    public function testSparql(): void
+    {
+        $result = $this->client->query->sparql(query: 'query');
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(SparqlResult::class, $result);
+    }
+
+    #[Test]
+    public function testSparqlWithOptionalParams(): void
+    {
+        $result = $this->client->query->sparql(query: 'query');
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(SparqlResult::class, $result);
+    }
+}
