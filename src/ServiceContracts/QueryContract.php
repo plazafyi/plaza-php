@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Plaza\ServiceContracts;
+
+use Plaza\Core\Exceptions\APIException;
+use Plaza\PlazaClientService\FeatureCollection;
+use Plaza\Query\SparqlResult;
+use Plaza\RequestOptions;
+
+/**
+ * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
+ */
+interface QueryContract
+{
+    /**
+     * @api
+     *
+     * @param string $data Overpass QL query string
+     * @param RequestOpts|null $requestOptions
+     *
+     * @throws APIException
+     */
+    public function overpass(
+        string $data,
+        RequestOptions|array|null $requestOptions = null
+    ): FeatureCollection;
+
+    /**
+     * @api
+     *
+     * @param string $query SPARQL query string
+     * @param RequestOpts|null $requestOptions
+     *
+     * @throws APIException
+     */
+    public function sparql(
+        string $query,
+        RequestOptions|array|null $requestOptions = null
+    ): SparqlResult;
+}
