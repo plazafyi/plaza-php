@@ -7,21 +7,19 @@ namespace Plaza\Optimize;
 use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\Optimize\OptimizeCompletedResult\Properties;
-use Plaza\Optimize\OptimizeCompletedResult\Status;
+use Plaza\Optimize\OptimizeCompletedResult\Feature;
 use Plaza\Optimize\OptimizeCompletedResult\Type;
-use Plaza\PlazaClientService\GeoJsonGeometry;
 
 /**
- * Completed optimization — GeoJSON Feature with optimized route.
+ * Completed optimization result as a GeoJSON FeatureCollection. Each Feature is a waypoint in optimized visit order. Top-level fields provide summary statistics.
  *
- * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
- * @phpstan-import-type PropertiesShape from \Plaza\Optimize\OptimizeCompletedResult\Properties
+ * @phpstan-import-type FeatureShape from \Plaza\Optimize\OptimizeCompletedResult\Feature
  *
  * @phpstan-type OptimizeCompletedResultShape = array{
- *   geometry: GeoJsonGeometry|GeoJsonGeometryShape,
- *   properties: Properties|PropertiesShape,
- *   status: Status|value-of<Status>,
+ *   features: list<Feature|FeatureShape>,
+ *   optimization: string,
+ *   roundtrip: bool,
+ *   totalCostS: float,
  *   type: Type|value-of<Type>,
  * }
  */
@@ -30,19 +28,31 @@ final class OptimizeCompletedResult implements BaseModel
     /** @use SdkModel<OptimizeCompletedResultShape> */
     use SdkModel;
 
-    #[Required]
-    public GeoJsonGeometry $geometry;
-
-    #[Required]
-    public Properties $properties;
+    /**
+     * Waypoints in optimized visit order.
+     *
+     * @var list<Feature> $features
+     */
+    #[Required(list: Feature::class)]
+    public array $features;
 
     /**
-     * Job status.
-     *
-     * @var value-of<Status> $status
+     * Optimization method used (e.g. `nearest_neighbor`, `2opt`).
      */
-    #[Required(enum: Status::class)]
-    public string $status;
+    #[Required]
+    public string $optimization;
+
+    /**
+     * Whether the route returns to the starting waypoint.
+     */
+    #[Required]
+    public bool $roundtrip;
+
+    /**
+     * Total travel time for the optimized route in seconds.
+     */
+    #[Required('total_cost_s')]
+    public float $totalCostS;
 
     /** @var value-of<Type> $type */
     #[Required(enum: Type::class)]
@@ -54,7 +64,7 @@ final class OptimizeCompletedResult implements BaseModel
      * To enforce required parameters use
      * ```
      * OptimizeCompletedResult::with(
-     *   geometry: ..., properties: ..., status: ..., type: ...
+     *   features: ..., optimization: ..., roundtrip: ..., totalCostS: ..., type: ...
      * )
      * ```
      *
@@ -62,9 +72,10 @@ final class OptimizeCompletedResult implements BaseModel
      *
      * ```
      * (new OptimizeCompletedResult)
-     *   ->withGeometry(...)
-     *   ->withProperties(...)
-     *   ->withStatus(...)
+     *   ->withFeatures(...)
+     *   ->withOptimization(...)
+     *   ->withRoundtrip(...)
+     *   ->withTotalCostS(...)
      *   ->withType(...)
      * ```
      */
@@ -78,58 +89,69 @@ final class OptimizeCompletedResult implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
-     * @param Properties|PropertiesShape $properties
-     * @param Status|value-of<Status> $status
+     * @param list<Feature|FeatureShape> $features
      * @param Type|value-of<Type> $type
      */
     public static function with(
-        GeoJsonGeometry|array $geometry,
-        Properties|array $properties,
-        Status|string $status,
+        array $features,
+        string $optimization,
+        bool $roundtrip,
+        float $totalCostS,
         Type|string $type,
     ): self {
         $self = new self;
 
-        $self['geometry'] = $geometry;
-        $self['properties'] = $properties;
-        $self['status'] = $status;
+        $self['features'] = $features;
+        $self['optimization'] = $optimization;
+        $self['roundtrip'] = $roundtrip;
+        $self['totalCostS'] = $totalCostS;
         $self['type'] = $type;
 
         return $self;
     }
 
     /**
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
-     */
-    public function withGeometry(GeoJsonGeometry|array $geometry): self
-    {
-        $self = clone $this;
-        $self['geometry'] = $geometry;
-
-        return $self;
-    }
-
-    /**
-     * @param Properties|PropertiesShape $properties
-     */
-    public function withProperties(Properties|array $properties): self
-    {
-        $self = clone $this;
-        $self['properties'] = $properties;
-
-        return $self;
-    }
-
-    /**
-     * Job status.
+     * Waypoints in optimized visit order.
      *
-     * @param Status|value-of<Status> $status
+     * @param list<Feature|FeatureShape> $features
      */
-    public function withStatus(Status|string $status): self
+    public function withFeatures(array $features): self
     {
         $self = clone $this;
-        $self['status'] = $status;
+        $self['features'] = $features;
+
+        return $self;
+    }
+
+    /**
+     * Optimization method used (e.g. `nearest_neighbor`, `2opt`).
+     */
+    public function withOptimization(string $optimization): self
+    {
+        $self = clone $this;
+        $self['optimization'] = $optimization;
+
+        return $self;
+    }
+
+    /**
+     * Whether the route returns to the starting waypoint.
+     */
+    public function withRoundtrip(bool $roundtrip): self
+    {
+        $self = clone $this;
+        $self['roundtrip'] = $roundtrip;
+
+        return $self;
+    }
+
+    /**
+     * Total travel time for the optimized route in seconds.
+     */
+    public function withTotalCostS(float $totalCostS): self
+    {
+        $self = clone $this;
+        $self['totalCostS'] = $totalCostS;
 
         return $self;
     }

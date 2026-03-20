@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Plaza\Optimize\OptimizeCreateParams;
 
 /**
- * Travel mode (default: auto).
+ * Travel mode (default: `auto`).
  */
 enum Mode: string
 {

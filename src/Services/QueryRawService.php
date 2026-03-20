@@ -8,6 +8,9 @@ use Plaza\Client;
 use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\PlazaClientService\FeatureCollection;
+use Plaza\Query\QueryExecuteParams;
+use Plaza\Query\QueryExecuteParams\Step;
+use Plaza\Query\QueryExecuteResponse;
 use Plaza\Query\QueryOverpassParams;
 use Plaza\Query\QuerySparqlParams;
 use Plaza\Query\SparqlResult;
@@ -15,6 +18,7 @@ use Plaza\RequestOptions;
 use Plaza\ServiceContracts\QueryRawContract;
 
 /**
+ * @phpstan-import-type StepShape from \Plaza\Query\QueryExecuteParams\Step
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 final class QueryRawService implements QueryRawContract
@@ -24,6 +28,37 @@ final class QueryRawService implements QueryRawContract
      * @internal
      */
     public function __construct(private Client $client) {}
+
+    /**
+     * @api
+     *
+     * Execute a multi-step query pipeline
+     *
+     * @param array{steps: list<Step|StepShape>}|QueryExecuteParams $params
+     * @param RequestOpts|null $requestOptions
+     *
+     * @return BaseResponse<QueryExecuteResponse>
+     *
+     * @throws APIException
+     */
+    public function execute(
+        array|QueryExecuteParams $params,
+        RequestOptions|array|null $requestOptions = null,
+    ): BaseResponse {
+        [$parsed, $options] = QueryExecuteParams::parseRequest(
+            $params,
+            $requestOptions,
+        );
+
+        // @phpstan-ignore-next-line return.type
+        return $this->client->request(
+            method: 'post',
+            path: 'api/v1/query',
+            body: (object) $parsed,
+            options: $options,
+            convert: QueryExecuteResponse::class,
+        );
+    }
 
     /**
      * @api
@@ -50,7 +85,6 @@ final class QueryRawService implements QueryRawContract
         return $this->client->request(
             method: 'post',
             path: 'api/v1/overpass',
-            headers: ['Accept' => 'application/geo+json'],
             body: (object) $parsed,
             options: $options,
             convert: FeatureCollection::class,
@@ -82,7 +116,6 @@ final class QueryRawService implements QueryRawContract
         return $this->client->request(
             method: 'post',
             path: 'api/v1/sparql',
-            headers: ['Accept' => 'application/geo+json'],
             body: (object) $parsed,
             options: $options,
             convert: SparqlResult::class,

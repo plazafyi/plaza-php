@@ -11,6 +11,8 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\PlazaClientService\GeoJsonFeature\Type;
 
 /**
+ * GeoJSON Feature representing an OSM element. Tags from the original OSM element are flattened directly into `properties` (not nested under a `tags` key). Metadata fields `@var` and `@id` identify the OSM element type and ID within properties.
+ *
  * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
  *
  * @phpstan-type GeoJsonFeatureShape = array{
@@ -18,7 +20,6 @@ use Plaza\PlazaClientService\GeoJsonFeature\Type;
  *   properties: array<string,mixed>,
  *   type: Type|value-of<Type>,
  *   id?: string|null,
- *   osmID?: int|null,
  * }
  */
 final class GeoJsonFeature implements BaseModel
@@ -26,28 +27,33 @@ final class GeoJsonFeature implements BaseModel
     /** @use SdkModel<GeoJsonFeatureShape> */
     use SdkModel;
 
+    /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     */
     #[Required]
     public GeoJsonGeometry $geometry;
 
-    /** @var array<string,mixed> $properties */
+    /**
+     * OSM tags flattened as key-value pairs, plus `@var` (node/way/relation) and `@id` (OSM ID) metadata fields. May include `distance_m` for proximity queries.
+     *
+     * @var array<string,mixed> $properties
+     */
     #[Required(map: 'mixed')]
     public array $properties;
 
-    /** @var value-of<Type> $type */
+    /**
+     * Always `Feature`.
+     *
+     * @var value-of<Type> $type
+     */
     #[Required(enum: Type::class)]
     public string $type;
 
     /**
-     * Feature identifier (type/osm_id).
+     * Compound identifier in `type/osm_id` format.
      */
     #[Optional]
     public ?string $id;
-
-    /**
-     * OpenStreetMap ID.
-     */
-    #[Optional('osm_id')]
-    public ?int $osmID;
 
     /**
      * `new GeoJsonFeature()` is missing required properties by the API.
@@ -82,7 +88,6 @@ final class GeoJsonFeature implements BaseModel
         array $properties,
         Type|string $type,
         ?string $id = null,
-        ?int $osmID = null,
     ): self {
         $self = new self;
 
@@ -91,12 +96,13 @@ final class GeoJsonFeature implements BaseModel
         $self['type'] = $type;
 
         null !== $id && $self['id'] = $id;
-        null !== $osmID && $self['osmID'] = $osmID;
 
         return $self;
     }
 
     /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     *
      * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
      */
     public function withGeometry(GeoJsonGeometry|array $geometry): self
@@ -108,6 +114,8 @@ final class GeoJsonFeature implements BaseModel
     }
 
     /**
+     * OSM tags flattened as key-value pairs, plus `@var` (node/way/relation) and `@id` (OSM ID) metadata fields. May include `distance_m` for proximity queries.
+     *
      * @param array<string,mixed> $properties
      */
     public function withProperties(array $properties): self
@@ -119,6 +127,8 @@ final class GeoJsonFeature implements BaseModel
     }
 
     /**
+     * Always `Feature`.
+     *
      * @param Type|value-of<Type> $type
      */
     public function withType(Type|string $type): self
@@ -130,23 +140,12 @@ final class GeoJsonFeature implements BaseModel
     }
 
     /**
-     * Feature identifier (type/osm_id).
+     * Compound identifier in `type/osm_id` format.
      */
     public function withID(string $id): self
     {
         $self = clone $this;
         $self['id'] = $id;
-
-        return $self;
-    }
-
-    /**
-     * OpenStreetMap ID.
-     */
-    public function withOsmID(int $osmID): self
-    {
-        $self = clone $this;
-        $self['osmID'] = $osmID;
 
         return $self;
     }

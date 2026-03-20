@@ -12,7 +12,7 @@ use Plaza\Elevation\ElevationProfileResult\Type;
 use Plaza\PlazaClientService\GeoJsonGeometry;
 
 /**
- * GeoJSON LineString Feature with 3D coordinates representing an elevation profile.
+ * GeoJSON LineString Feature with 3D coordinates [lng, lat, elevation] representing the elevation profile along the input path. Summary statistics are in properties.
  *
  * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
  * @phpstan-import-type PropertiesShape from \Plaza\Elevation\ElevationProfileResult\Properties
@@ -28,9 +28,15 @@ final class ElevationProfileResult implements BaseModel
     /** @use SdkModel<ElevationProfileResultShape> */
     use SdkModel;
 
+    /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     */
     #[Required]
     public GeoJsonGeometry $geometry;
 
+    /**
+     * Elevation profile summary statistics.
+     */
     #[Required]
     public Properties $properties;
 
@@ -84,6 +90,8 @@ final class ElevationProfileResult implements BaseModel
     }
 
     /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     *
      * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
      */
     public function withGeometry(GeoJsonGeometry|array $geometry): self
@@ -95,6 +103,8 @@ final class ElevationProfileResult implements BaseModel
     }
 
     /**
+     * Elevation profile summary statistics.
+     *
      * @param Properties|PropertiesShape $properties
      */
     public function withProperties(Properties|array $properties): self

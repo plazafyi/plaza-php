@@ -11,10 +11,13 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\Optimize\OptimizeJobStatus\Status;
 
 /**
- * Status of an async optimization job.
+ * Status of an async optimization job. When `completed`, the `result` field contains the full OptimizeCompletedResult. When `processing`, the job is still running — poll again. Failed jobs return a standard Error response (HTTP 422), not this schema.
+ *
+ * @phpstan-import-type OptimizeCompletedResultShape from \Plaza\Optimize\OptimizeCompletedResult
  *
  * @phpstan-type OptimizeJobStatusShape = array{
- *   status: Status|value-of<Status>, error?: string|null, result?: mixed
+ *   status: Status|value-of<Status>,
+ *   result?: null|OptimizeCompletedResult|OptimizeCompletedResultShape,
  * }
  */
 final class OptimizeJobStatus implements BaseModel
@@ -23,7 +26,7 @@ final class OptimizeJobStatus implements BaseModel
     use SdkModel;
 
     /**
-     * Job status.
+     * Current job state.
      *
      * @var value-of<Status> $status
      */
@@ -31,16 +34,10 @@ final class OptimizeJobStatus implements BaseModel
     public string $status;
 
     /**
-     * Error message when failed.
+     * Completed optimization result as a GeoJSON FeatureCollection. Each Feature is a waypoint in optimized visit order. Top-level fields provide summary statistics.
      */
     #[Optional(nullable: true)]
-    public ?string $error;
-
-    /**
-     * Optimization result when completed.
-     */
-    #[Optional(nullable: true)]
-    public mixed $result;
+    public ?OptimizeCompletedResult $result;
 
     /**
      * `new OptimizeJobStatus()` is missing required properties by the API.
@@ -67,24 +64,23 @@ final class OptimizeJobStatus implements BaseModel
      * You must use named parameters to construct any parameters with a default value.
      *
      * @param Status|value-of<Status> $status
+     * @param OptimizeCompletedResult|OptimizeCompletedResultShape|null $result
      */
     public static function with(
         Status|string $status,
-        ?string $error = null,
-        mixed $result = null
+        OptimizeCompletedResult|array|null $result = null
     ): self {
         $self = new self;
 
         $self['status'] = $status;
 
-        null !== $error && $self['error'] = $error;
         null !== $result && $self['result'] = $result;
 
         return $self;
     }
 
     /**
-     * Job status.
+     * Current job state.
      *
      * @param Status|value-of<Status> $status
      */
@@ -97,20 +93,11 @@ final class OptimizeJobStatus implements BaseModel
     }
 
     /**
-     * Error message when failed.
+     * Completed optimization result as a GeoJSON FeatureCollection. Each Feature is a waypoint in optimized visit order. Top-level fields provide summary statistics.
+     *
+     * @param OptimizeCompletedResult|OptimizeCompletedResultShape|null $result
      */
-    public function withError(?string $error): self
-    {
-        $self = clone $this;
-        $self['error'] = $error;
-
-        return $self;
-    }
-
-    /**
-     * Optimization result when completed.
-     */
-    public function withResult(mixed $result): self
+    public function withResult(OptimizeCompletedResult|array|null $result): self
     {
         $self = clone $this;
         $self['result'] = $result;

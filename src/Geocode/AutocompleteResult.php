@@ -10,7 +10,7 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\Geocode\AutocompleteResult\Type;
 
 /**
- * GeoJSON FeatureCollection of autocomplete suggestions.
+ * GeoJSON FeatureCollection of autocomplete suggestions for partial address input. Optimized for low-latency type-ahead UIs. Content-Type: `application/geo+json`.
  *
  * @phpstan-import-type GeocodingFeatureShape from \Plaza\Geocode\GeocodingFeature
  *
@@ -24,7 +24,11 @@ final class AutocompleteResult implements BaseModel
     /** @use SdkModel<AutocompleteResultShape> */
     use SdkModel;
 
-    /** @var list<GeocodingFeature> $features */
+    /**
+     * Autocomplete suggestions ordered by relevance.
+     *
+     * @var list<GeocodingFeature> $features
+     */
     #[Required(list: GeocodingFeature::class)]
     public array $features;
 
@@ -70,6 +74,8 @@ final class AutocompleteResult implements BaseModel
     }
 
     /**
+     * Autocomplete suggestions ordered by relevance.
+     *
      * @param list<GeocodingFeature|GeocodingFeatureShape> $features
      */
     public function withFeatures(array $features): self

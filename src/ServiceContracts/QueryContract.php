@@ -6,14 +6,30 @@ namespace Plaza\ServiceContracts;
 
 use Plaza\Core\Exceptions\APIException;
 use Plaza\PlazaClientService\FeatureCollection;
+use Plaza\Query\QueryExecuteParams\Step;
+use Plaza\Query\QueryExecuteResponse;
 use Plaza\Query\SparqlResult;
 use Plaza\RequestOptions;
 
 /**
+ * @phpstan-import-type StepShape from \Plaza\Query\QueryExecuteParams\Step
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 interface QueryContract
 {
+    /**
+     * @api
+     *
+     * @param list<Step|StepShape> $steps Ordered list of query steps to execute
+     * @param RequestOpts|null $requestOptions
+     *
+     * @throws APIException
+     */
+    public function execute(
+        array $steps,
+        RequestOptions|array|null $requestOptions = null
+    ): QueryExecuteResponse;
+
     /**
      * @api
      *

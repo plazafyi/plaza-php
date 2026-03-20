@@ -12,7 +12,7 @@ use Plaza\Routing\NearestResult\Properties;
 use Plaza\Routing\NearestResult\Type;
 
 /**
- * GeoJSON Point Feature snapped to the nearest road segment.
+ * GeoJSON Point Feature representing the nearest point on the road network to the input coordinate. Used for snapping GPS coordinates to roads.
  *
  * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
  * @phpstan-import-type PropertiesShape from \Plaza\Routing\NearestResult\Properties
@@ -28,9 +28,15 @@ final class NearestResult implements BaseModel
     /** @use SdkModel<NearestResultShape> */
     use SdkModel;
 
+    /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     */
     #[Required]
     public GeoJsonGeometry $geometry;
 
+    /**
+     * Snap result metadata.
+     */
     #[Required]
     public Properties $properties;
 
@@ -81,6 +87,8 @@ final class NearestResult implements BaseModel
     }
 
     /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     *
      * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
      */
     public function withGeometry(GeoJsonGeometry|array $geometry): self
@@ -92,6 +100,8 @@ final class NearestResult implements BaseModel
     }
 
     /**
+     * Snap result metadata.
+     *
      * @param Properties|PropertiesShape $properties
      */
     public function withProperties(Properties|array $properties): self

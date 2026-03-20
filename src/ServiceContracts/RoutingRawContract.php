@@ -6,14 +6,16 @@ namespace Plaza\ServiceContracts;
 
 use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
-use Plaza\PlazaClientService\GeoJsonFeature;
 use Plaza\RequestOptions;
-use Plaza\Routing\MatrixResult;
 use Plaza\Routing\NearestResult;
 use Plaza\Routing\RouteResult;
 use Plaza\Routing\RoutingIsochroneParams;
+use Plaza\Routing\RoutingIsochronePostParams;
+use Plaza\Routing\RoutingIsochronePostResponse;
+use Plaza\Routing\RoutingIsochroneResponse;
 use Plaza\Routing\RoutingMatrixParams;
 use Plaza\Routing\RoutingNearestParams;
+use Plaza\Routing\RoutingNearestPostParams;
 use Plaza\Routing\RoutingRouteParams;
 
 /**
@@ -27,7 +29,7 @@ interface RoutingRawContract
      * @param array<string,mixed>|RoutingIsochroneParams $params
      * @param RequestOpts|null $requestOptions
      *
-     * @return BaseResponse<GeoJsonFeature>
+     * @return BaseResponse<RoutingIsochroneResponse>
      *
      * @throws APIException
      */
@@ -39,10 +41,25 @@ interface RoutingRawContract
     /**
      * @api
      *
+     * @param array<string,mixed>|RoutingIsochronePostParams $params
+     * @param RequestOpts|null $requestOptions
+     *
+     * @return BaseResponse<RoutingIsochronePostResponse>
+     *
+     * @throws APIException
+     */
+    public function isochronePost(
+        array|RoutingIsochronePostParams $params,
+        RequestOptions|array|null $requestOptions = null,
+    ): BaseResponse;
+
+    /**
+     * @api
+     *
      * @param array<string,mixed>|RoutingMatrixParams $params
      * @param RequestOpts|null $requestOptions
      *
-     * @return BaseResponse<MatrixResult>
+     * @return BaseResponse<array<string,mixed>>
      *
      * @throws APIException
      */
@@ -63,6 +80,21 @@ interface RoutingRawContract
      */
     public function nearest(
         array|RoutingNearestParams $params,
+        RequestOptions|array|null $requestOptions = null,
+    ): BaseResponse;
+
+    /**
+     * @api
+     *
+     * @param array<string,mixed>|RoutingNearestPostParams $params
+     * @param RequestOpts|null $requestOptions
+     *
+     * @return BaseResponse<NearestResult>
+     *
+     * @throws APIException
+     */
+    public function nearestPost(
+        array|RoutingNearestPostParams $params,
         RequestOptions|array|null $requestOptions = null,
     ): BaseResponse;
 

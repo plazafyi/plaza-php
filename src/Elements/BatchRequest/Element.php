@@ -10,6 +10,8 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\Elements\BatchRequest\Element\Type;
 
 /**
+ * Reference to a single OSM element.
+ *
  * @phpstan-type ElementShape = array{id: int, type: Type|value-of<Type>}
  */
 final class Element implements BaseModel
@@ -17,10 +19,17 @@ final class Element implements BaseModel
     /** @use SdkModel<ElementShape> */
     use SdkModel;
 
+    /**
+     * OSM element ID.
+     */
     #[Required]
     public int $id;
 
-    /** @var value-of<Type> $type */
+    /**
+     * OSM element type.
+     *
+     * @var value-of<Type> $type
+     */
     #[Required(enum: Type::class)]
     public string $type;
 
@@ -60,6 +69,9 @@ final class Element implements BaseModel
         return $self;
     }
 
+    /**
+     * OSM element ID.
+     */
     public function withID(int $id): self
     {
         $self = clone $this;
@@ -69,6 +81,8 @@ final class Element implements BaseModel
     }
 
     /**
+     * OSM element type.
+     *
      * @param Type|value-of<Type> $type
      */
     public function withType(Type|string $type): self

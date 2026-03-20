@@ -9,7 +9,7 @@ use Plaza\Core\Conversion\Contracts\Converter;
 use Plaza\Core\Conversion\Contracts\ConverterSource;
 
 /**
- * Optimization response — either a completed GeoJSON Feature route or an async job reference.
+ * Optimization response — either a completed FeatureCollection with the optimized route, or an async job reference to poll.
  *
  * @phpstan-import-type OptimizeCompletedResultShape from \Plaza\Optimize\OptimizeCompletedResult
  * @phpstan-import-type OptimizeProcessingResultShape from \Plaza\Optimize\OptimizeProcessingResult

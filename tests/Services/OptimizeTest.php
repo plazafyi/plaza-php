@@ -31,7 +31,11 @@ final class OptimizeTest extends TestCase
     public function testCreate(): void
     {
         $result = $this->client->optimize->create(
-            waypoints: ['coordinates' => [0], 'type' => 'Point']
+            waypoints: [
+                ['lat' => 48.8566, 'lng' => 2.3522],
+                ['lat' => 48.8606, 'lng' => 2.3376],
+                ['lat' => 48.8584, 'lng' => 2.2945],
+            ],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -42,9 +46,13 @@ final class OptimizeTest extends TestCase
     public function testCreateWithOptionalParams(): void
     {
         $result = $this->client->optimize->create(
-            waypoints: ['coordinates' => [0], 'type' => 'Point'],
+            waypoints: [
+                ['lat' => 48.8566, 'lng' => 2.3522],
+                ['lat' => 48.8606, 'lng' => 2.3376],
+                ['lat' => 48.8584, 'lng' => 2.2945],
+            ],
             mode: 'auto',
-            roundtrip: true,
+            roundtrip: false,
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType

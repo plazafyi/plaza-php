@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Plaza\Routing\RouteRequest;
 
+/**
+ * Travel mode (default: `auto`).
+ */
 enum Mode: string
 {
     case AUTO = 'auto';

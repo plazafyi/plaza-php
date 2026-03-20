@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Plaza\Routing\MatrixRequest;
 
 /**
- * Travel mode.
+ * Travel mode (default: `auto`).
  */
 enum Mode: string
 {

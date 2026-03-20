@@ -7,18 +7,21 @@ namespace Plaza\Services;
 use Plaza\Client;
 use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
+use Plaza\Core\Util;
 use Plaza\Elevation\ElevationBatchParams;
+use Plaza\Elevation\ElevationBatchParams\Coordinate;
 use Plaza\Elevation\ElevationBatchResult;
 use Plaza\Elevation\ElevationLookupParams;
+use Plaza\Elevation\ElevationLookupPostParams;
 use Plaza\Elevation\ElevationLookupResult;
 use Plaza\Elevation\ElevationProfileParams;
 use Plaza\Elevation\ElevationProfileResult;
-use Plaza\PlazaClientService\GeoJsonGeometry;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\ElevationRawContract;
 
 /**
- * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
+ * @phpstan-import-type CoordinateShape from \Plaza\Elevation\ElevationBatchParams\Coordinate
+ * @phpstan-import-type CoordinateShape from \Plaza\Elevation\ElevationProfileParams\Coordinate as CoordinateShape1
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 final class ElevationRawService implements ElevationRawContract
@@ -35,7 +38,7 @@ final class ElevationRawService implements ElevationRawContract
      * Look up elevation for multiple coordinates
      *
      * @param array{
-     *   geometry: GeoJsonGeometry|GeoJsonGeometryShape
+     *   coordinates: list<Coordinate|CoordinateShape>
      * }|ElevationBatchParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -56,7 +59,6 @@ final class ElevationRawService implements ElevationRawContract
         return $this->client->request(
             method: 'post',
             path: 'api/v1/elevation/batch',
-            headers: ['Accept' => 'application/geo+json'],
             body: (object) $parsed,
             options: $options,
             convert: ElevationBatchResult::class,
@@ -69,7 +71,12 @@ final class ElevationRawService implements ElevationRawContract
      * Look up elevation at one or more points
      *
      * @param array{
-     *   lat?: float, lng?: float, locations?: string
+     *   lat?: float,
+     *   lng?: float,
+     *   locations?: string,
+     *   outputFields?: string,
+     *   outputInclude?: string,
+     *   outputPrecision?: int,
      * }|ElevationLookupParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -90,8 +97,59 @@ final class ElevationRawService implements ElevationRawContract
         return $this->client->request(
             method: 'get',
             path: 'api/v1/elevation',
-            query: $parsed,
-            headers: ['Accept' => 'application/geo+json'],
+            query: Util::array_transform_keys(
+                $parsed,
+                [
+                    'outputFields' => 'output[fields]',
+                    'outputInclude' => 'output[include]',
+                    'outputPrecision' => 'output[precision]',
+                ],
+            ),
+            options: $options,
+            convert: ElevationLookupResult::class,
+        );
+    }
+
+    /**
+     * @api
+     *
+     * Look up elevation at one or more points
+     *
+     * @param array{
+     *   lat?: float,
+     *   lng?: float,
+     *   locations?: string,
+     *   outputFields?: string,
+     *   outputInclude?: string,
+     *   outputPrecision?: int,
+     * }|ElevationLookupPostParams $params
+     * @param RequestOpts|null $requestOptions
+     *
+     * @return BaseResponse<ElevationLookupResult>
+     *
+     * @throws APIException
+     */
+    public function lookupPost(
+        array|ElevationLookupPostParams $params,
+        RequestOptions|array|null $requestOptions = null,
+    ): BaseResponse {
+        [$parsed, $options] = ElevationLookupPostParams::parseRequest(
+            $params,
+            $requestOptions,
+        );
+
+        // @phpstan-ignore-next-line return.type
+        return $this->client->request(
+            method: 'post',
+            path: 'api/v1/elevation',
+            query: Util::array_transform_keys(
+                $parsed,
+                [
+                    'outputFields' => 'output[fields]',
+                    'outputInclude' => 'output[include]',
+                    'outputPrecision' => 'output[precision]',
+                ],
+            ),
             options: $options,
             convert: ElevationLookupResult::class,
         );
@@ -103,7 +161,7 @@ final class ElevationRawService implements ElevationRawContract
      * Elevation profile along coordinates
      *
      * @param array{
-     *   geometry: GeoJsonGeometry|GeoJsonGeometryShape
+     *   coordinates: list<ElevationProfileParams\Coordinate|CoordinateShape1>,
      * }|ElevationProfileParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -124,7 +182,6 @@ final class ElevationRawService implements ElevationRawContract
         return $this->client->request(
             method: 'post',
             path: 'api/v1/elevation/profile',
-            headers: ['Accept' => 'application/geo+json'],
             body: (object) $parsed,
             options: $options,
             convert: ElevationProfileResult::class,

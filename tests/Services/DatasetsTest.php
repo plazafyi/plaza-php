@@ -32,7 +32,10 @@ final class DatasetsTest extends TestCase
     #[Test]
     public function testCreate(): void
     {
-        $result = $this->client->datasets->create(name: 'name', slug: 'slug');
+        $result = $this->client->datasets->create(
+            name: 'NYC Bike Lanes',
+            slug: 'nyc-bike-lanes'
+        );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(Dataset::class, $result);
@@ -42,12 +45,12 @@ final class DatasetsTest extends TestCase
     public function testCreateWithOptionalParams(): void
     {
         $result = $this->client->datasets->create(
-            name: 'name',
-            slug: 'slug',
+            name: 'NYC Bike Lanes',
+            slug: 'nyc-bike-lanes',
             attribution: 'attribution',
             description: 'description',
             license: 'license',
-            sourceURL: 'source_url',
+            sourceURL: 'https://example.com',
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType

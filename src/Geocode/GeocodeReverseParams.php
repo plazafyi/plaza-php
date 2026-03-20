@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Plaza\Geocode;
 
 use Plaza\Core\Attributes\Optional;
-use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
@@ -16,11 +15,12 @@ use Plaza\Core\Contracts\BaseModel;
  * @see Plaza\Services\GeocodeService::reverse()
  *
  * @phpstan-type GeocodeReverseParamsShape = array{
- *   lat: float,
- *   lng: float,
  *   lang?: string|null,
+ *   lat?: float|null,
  *   layer?: string|null,
  *   limit?: int|null,
+ *   lng?: float|null,
+ *   near?: string|null,
  *   radius?: int|null,
  * }
  */
@@ -31,22 +31,16 @@ final class GeocodeReverseParams implements BaseModel
     use SdkParams;
 
     /**
-     * Latitude.
-     */
-    #[Required]
-    public float $lat;
-
-    /**
-     * Longitude.
-     */
-    #[Required]
-    public float $lng;
-
-    /**
      * Language code for localized names (e.g. en, de, fr).
      */
     #[Optional]
     public ?string $lang;
+
+    /**
+     * Legacy shorthand. Latitude. Use near param instead.
+     */
+    #[Optional]
+    public ?float $lat;
 
     /**
      * Filter by layer: house or poi.
@@ -61,25 +55,23 @@ final class GeocodeReverseParams implements BaseModel
     public ?int $limit;
 
     /**
+     * Legacy shorthand. Longitude. Use near param instead.
+     */
+    #[Optional]
+    public ?float $lng;
+
+    /**
+     * Point geometry for reverse geocode (lat,lng or GeoJSON). Alternative to lat/lng params.
+     */
+    #[Optional]
+    public ?string $near;
+
+    /**
      * Search radius in meters (default 200, max 5000).
      */
     #[Optional]
     public ?int $radius;
 
-    /**
-     * `new GeocodeReverseParams()` is missing required properties by the API.
-     *
-     * To enforce required parameters use
-     * ```
-     * GeocodeReverseParams::with(lat: ..., lng: ...)
-     * ```
-     *
-     * Otherwise ensure the following setters are called
-     *
-     * ```
-     * (new GeocodeReverseParams)->withLat(...)->withLng(...)
-     * ```
-     */
     public function __construct()
     {
         $this->initialize();
@@ -91,44 +83,23 @@ final class GeocodeReverseParams implements BaseModel
      * You must use named parameters to construct any parameters with a default value.
      */
     public static function with(
-        float $lat,
-        float $lng,
         ?string $lang = null,
+        ?float $lat = null,
         ?string $layer = null,
         ?int $limit = null,
+        ?float $lng = null,
+        ?string $near = null,
         ?int $radius = null,
     ): self {
         $self = new self;
 
-        $self['lat'] = $lat;
-        $self['lng'] = $lng;
-
         null !== $lang && $self['lang'] = $lang;
+        null !== $lat && $self['lat'] = $lat;
         null !== $layer && $self['layer'] = $layer;
         null !== $limit && $self['limit'] = $limit;
+        null !== $lng && $self['lng'] = $lng;
+        null !== $near && $self['near'] = $near;
         null !== $radius && $self['radius'] = $radius;
-
-        return $self;
-    }
-
-    /**
-     * Latitude.
-     */
-    public function withLat(float $lat): self
-    {
-        $self = clone $this;
-        $self['lat'] = $lat;
-
-        return $self;
-    }
-
-    /**
-     * Longitude.
-     */
-    public function withLng(float $lng): self
-    {
-        $self = clone $this;
-        $self['lng'] = $lng;
 
         return $self;
     }
@@ -140,6 +111,17 @@ final class GeocodeReverseParams implements BaseModel
     {
         $self = clone $this;
         $self['lang'] = $lang;
+
+        return $self;
+    }
+
+    /**
+     * Legacy shorthand. Latitude. Use near param instead.
+     */
+    public function withLat(float $lat): self
+    {
+        $self = clone $this;
+        $self['lat'] = $lat;
 
         return $self;
     }
@@ -162,6 +144,28 @@ final class GeocodeReverseParams implements BaseModel
     {
         $self = clone $this;
         $self['limit'] = $limit;
+
+        return $self;
+    }
+
+    /**
+     * Legacy shorthand. Longitude. Use near param instead.
+     */
+    public function withLng(float $lng): self
+    {
+        $self = clone $this;
+        $self['lng'] = $lng;
+
+        return $self;
+    }
+
+    /**
+     * Point geometry for reverse geocode (lat,lng or GeoJSON). Alternative to lat/lng params.
+     */
+    public function withNear(string $near): self
+    {
+        $self = clone $this;
+        $self['near'] = $near;
 
         return $self;
     }

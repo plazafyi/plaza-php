@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Plaza\Optimize\OptimizeProcessingResult;
 
 /**
- * Job status.
+ * Always `processing`.
  */
 enum Status: string
 {

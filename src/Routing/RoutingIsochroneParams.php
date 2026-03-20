@@ -16,7 +16,15 @@ use Plaza\Core\Contracts\BaseModel;
  * @see Plaza\Services\RoutingService::isochrone()
  *
  * @phpstan-type RoutingIsochroneParamsShape = array{
- *   lat: float, lng: float, time: float, mode?: string|null
+ *   lat: float,
+ *   lng: float,
+ *   time: float,
+ *   mode?: string|null,
+ *   outputFields?: string|null,
+ *   outputGeometry?: bool|null,
+ *   outputInclude?: string|null,
+ *   outputPrecision?: int|null,
+ *   outputSimplify?: float|null,
  * }
  */
 final class RoutingIsochroneParams implements BaseModel
@@ -50,6 +58,36 @@ final class RoutingIsochroneParams implements BaseModel
     public ?string $mode;
 
     /**
+     * Comma-separated property fields to include.
+     */
+    #[Optional]
+    public ?string $outputFields;
+
+    /**
+     * Include geometry (default true).
+     */
+    #[Optional]
+    public ?bool $outputGeometry;
+
+    /**
+     * Extra computed fields: bbox, center.
+     */
+    #[Optional]
+    public ?string $outputInclude;
+
+    /**
+     * Coordinate decimal precision (1-15, default 7).
+     */
+    #[Optional]
+    public ?int $outputPrecision;
+
+    /**
+     * Simplify geometry tolerance in meters.
+     */
+    #[Optional]
+    public ?float $outputSimplify;
+
+    /**
      * `new RoutingIsochroneParams()` is missing required properties by the API.
      *
      * To enforce required parameters use
@@ -77,7 +115,12 @@ final class RoutingIsochroneParams implements BaseModel
         float $lat,
         float $lng,
         float $time,
-        ?string $mode = null
+        ?string $mode = null,
+        ?string $outputFields = null,
+        ?bool $outputGeometry = null,
+        ?string $outputInclude = null,
+        ?int $outputPrecision = null,
+        ?float $outputSimplify = null,
     ): self {
         $self = new self;
 
@@ -86,6 +129,11 @@ final class RoutingIsochroneParams implements BaseModel
         $self['time'] = $time;
 
         null !== $mode && $self['mode'] = $mode;
+        null !== $outputFields && $self['outputFields'] = $outputFields;
+        null !== $outputGeometry && $self['outputGeometry'] = $outputGeometry;
+        null !== $outputInclude && $self['outputInclude'] = $outputInclude;
+        null !== $outputPrecision && $self['outputPrecision'] = $outputPrecision;
+        null !== $outputSimplify && $self['outputSimplify'] = $outputSimplify;
 
         return $self;
     }
@@ -130,6 +178,61 @@ final class RoutingIsochroneParams implements BaseModel
     {
         $self = clone $this;
         $self['mode'] = $mode;
+
+        return $self;
+    }
+
+    /**
+     * Comma-separated property fields to include.
+     */
+    public function withOutputFields(string $outputFields): self
+    {
+        $self = clone $this;
+        $self['outputFields'] = $outputFields;
+
+        return $self;
+    }
+
+    /**
+     * Include geometry (default true).
+     */
+    public function withOutputGeometry(bool $outputGeometry): self
+    {
+        $self = clone $this;
+        $self['outputGeometry'] = $outputGeometry;
+
+        return $self;
+    }
+
+    /**
+     * Extra computed fields: bbox, center.
+     */
+    public function withOutputInclude(string $outputInclude): self
+    {
+        $self = clone $this;
+        $self['outputInclude'] = $outputInclude;
+
+        return $self;
+    }
+
+    /**
+     * Coordinate decimal precision (1-15, default 7).
+     */
+    public function withOutputPrecision(int $outputPrecision): self
+    {
+        $self = clone $this;
+        $self['outputPrecision'] = $outputPrecision;
+
+        return $self;
+    }
+
+    /**
+     * Simplify geometry tolerance in meters.
+     */
+    public function withOutputSimplify(float $outputSimplify): self
+    {
+        $self = clone $this;
+        $self['outputSimplify'] = $outputSimplify;
 
         return $self;
     }

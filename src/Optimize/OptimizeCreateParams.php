@@ -10,17 +10,17 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
 use Plaza\Optimize\OptimizeCreateParams\Mode;
-use Plaza\PlazaClientService\GeoJsonGeometry;
+use Plaza\Optimize\OptimizeCreateParams\Waypoint;
 
 /**
  * Optimize route through waypoints.
  *
  * @see Plaza\Services\OptimizeService::create()
  *
- * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
+ * @phpstan-import-type WaypointShape from \Plaza\Optimize\OptimizeCreateParams\Waypoint
  *
  * @phpstan-type OptimizeCreateParamsShape = array{
- *   waypoints: GeoJsonGeometry|GeoJsonGeometryShape,
+ *   waypoints: list<Waypoint|WaypointShape>,
  *   mode?: null|Mode|value-of<Mode>,
  *   roundtrip?: bool|null,
  * }
@@ -32,13 +32,15 @@ final class OptimizeCreateParams implements BaseModel
     use SdkParams;
 
     /**
-     * Waypoints to visit (GeoJSON MultiPoint geometry, minimum 2 points).
+     * Waypoints to visit in optimized order (2-50 points).
+     *
+     * @var list<Waypoint> $waypoints
      */
-    #[Required]
-    public GeoJsonGeometry $waypoints;
+    #[Required(list: Waypoint::class)]
+    public array $waypoints;
 
     /**
-     * Travel mode (default: auto).
+     * Travel mode (default: `auto`).
      *
      * @var value-of<Mode>|null $mode
      */
@@ -46,7 +48,7 @@ final class OptimizeCreateParams implements BaseModel
     public ?string $mode;
 
     /**
-     * Whether route returns to start (default: true).
+     * Whether the route should return to the starting waypoint (default: true).
      */
     #[Optional]
     public ?bool $roundtrip;
@@ -75,13 +77,13 @@ final class OptimizeCreateParams implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $waypoints
+     * @param list<Waypoint|WaypointShape> $waypoints
      * @param Mode|value-of<Mode>|null $mode
      */
     public static function with(
-        GeoJsonGeometry|array $waypoints,
+        array $waypoints,
         Mode|string|null $mode = null,
-        ?bool $roundtrip = null,
+        ?bool $roundtrip = null
     ): self {
         $self = new self;
 
@@ -94,11 +96,11 @@ final class OptimizeCreateParams implements BaseModel
     }
 
     /**
-     * Waypoints to visit (GeoJSON MultiPoint geometry, minimum 2 points).
+     * Waypoints to visit in optimized order (2-50 points).
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $waypoints
+     * @param list<Waypoint|WaypointShape> $waypoints
      */
-    public function withWaypoints(GeoJsonGeometry|array $waypoints): self
+    public function withWaypoints(array $waypoints): self
     {
         $self = clone $this;
         $self['waypoints'] = $waypoints;
@@ -107,7 +109,7 @@ final class OptimizeCreateParams implements BaseModel
     }
 
     /**
-     * Travel mode (default: auto).
+     * Travel mode (default: `auto`).
      *
      * @param Mode|value-of<Mode> $mode
      */
@@ -120,7 +122,7 @@ final class OptimizeCreateParams implements BaseModel
     }
 
     /**
-     * Whether route returns to start (default: true).
+     * Whether the route should return to the starting waypoint (default: true).
      */
     public function withRoundtrip(bool $roundtrip): self
     {

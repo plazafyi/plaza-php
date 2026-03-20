@@ -39,7 +39,41 @@ final class SearchTest extends TestCase
     #[Test]
     public function testQueryWithOptionalParams(): void
     {
-        $result = $this->client->search->query(q: 'q', cursor: 'cursor', limit: 0);
+        $result = $this->client->search->query(
+            q: 'q',
+            cursor: 'cursor',
+            limit: 0,
+            outputFields: 'output[fields]',
+            outputInclude: 'output[include]',
+            outputPrecision: 0,
+            outputSort: 'output[sort]',
+        );
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(FeatureCollection::class, $result);
+    }
+
+    #[Test]
+    public function testQueryPost(): void
+    {
+        $result = $this->client->search->queryPost(q: 'q');
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(FeatureCollection::class, $result);
+    }
+
+    #[Test]
+    public function testQueryPostWithOptionalParams(): void
+    {
+        $result = $this->client->search->queryPost(
+            q: 'q',
+            cursor: 'cursor',
+            limit: 0,
+            outputFields: 'output[fields]',
+            outputInclude: 'output[include]',
+            outputPrecision: 0,
+            outputSort: 'output[sort]',
+        );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(FeatureCollection::class, $result);

@@ -31,19 +31,19 @@ final class DatasetCreateParams implements BaseModel
     use SdkParams;
 
     /**
-     * Dataset name.
+     * Human-readable dataset name.
      */
     #[Required]
     public string $name;
 
     /**
-     * URL-friendly slug.
+     * URL-friendly identifier (lowercase, hyphens, no spaces).
      */
     #[Required]
     public string $slug;
 
     /**
-     * Attribution text.
+     * Required attribution text.
      */
     #[Optional(nullable: true)]
     public ?string $attribution;
@@ -55,7 +55,7 @@ final class DatasetCreateParams implements BaseModel
     public ?string $description;
 
     /**
-     * License identifier.
+     * License identifier (e.g. CC-BY-4.0).
      */
     #[Optional(nullable: true)]
     public ?string $license;
@@ -112,7 +112,7 @@ final class DatasetCreateParams implements BaseModel
     }
 
     /**
-     * Dataset name.
+     * Human-readable dataset name.
      */
     public function withName(string $name): self
     {
@@ -123,7 +123,7 @@ final class DatasetCreateParams implements BaseModel
     }
 
     /**
-     * URL-friendly slug.
+     * URL-friendly identifier (lowercase, hyphens, no spaces).
      */
     public function withSlug(string $slug): self
     {
@@ -134,7 +134,7 @@ final class DatasetCreateParams implements BaseModel
     }
 
     /**
-     * Attribution text.
+     * Required attribution text.
      */
     public function withAttribution(?string $attribution): self
     {
@@ -156,7 +156,7 @@ final class DatasetCreateParams implements BaseModel
     }
 
     /**
-     * License identifier.
+     * License identifier (e.g. CC-BY-4.0).
      */
     public function withLicense(?string $license): self
     {

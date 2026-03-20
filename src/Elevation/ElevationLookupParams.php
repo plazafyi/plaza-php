@@ -15,7 +15,12 @@ use Plaza\Core\Contracts\BaseModel;
  * @see Plaza\Services\ElevationService::lookup()
  *
  * @phpstan-type ElevationLookupParamsShape = array{
- *   lat?: float|null, lng?: float|null, locations?: string|null
+ *   lat?: float|null,
+ *   lng?: float|null,
+ *   locations?: string|null,
+ *   outputFields?: string|null,
+ *   outputInclude?: string|null,
+ *   outputPrecision?: int|null,
  * }
  */
 final class ElevationLookupParams implements BaseModel
@@ -42,6 +47,24 @@ final class ElevationLookupParams implements BaseModel
     #[Optional]
     public ?string $locations;
 
+    /**
+     * Comma-separated property fields to include.
+     */
+    #[Optional]
+    public ?string $outputFields;
+
+    /**
+     * Extra computed fields: bbox, center.
+     */
+    #[Optional]
+    public ?string $outputInclude;
+
+    /**
+     * Coordinate decimal precision (1-15, default 7).
+     */
+    #[Optional]
+    public ?int $outputPrecision;
+
     public function __construct()
     {
         $this->initialize();
@@ -55,13 +78,19 @@ final class ElevationLookupParams implements BaseModel
     public static function with(
         ?float $lat = null,
         ?float $lng = null,
-        ?string $locations = null
+        ?string $locations = null,
+        ?string $outputFields = null,
+        ?string $outputInclude = null,
+        ?int $outputPrecision = null,
     ): self {
         $self = new self;
 
         null !== $lat && $self['lat'] = $lat;
         null !== $lng && $self['lng'] = $lng;
         null !== $locations && $self['locations'] = $locations;
+        null !== $outputFields && $self['outputFields'] = $outputFields;
+        null !== $outputInclude && $self['outputInclude'] = $outputInclude;
+        null !== $outputPrecision && $self['outputPrecision'] = $outputPrecision;
 
         return $self;
     }
@@ -95,6 +124,39 @@ final class ElevationLookupParams implements BaseModel
     {
         $self = clone $this;
         $self['locations'] = $locations;
+
+        return $self;
+    }
+
+    /**
+     * Comma-separated property fields to include.
+     */
+    public function withOutputFields(string $outputFields): self
+    {
+        $self = clone $this;
+        $self['outputFields'] = $outputFields;
+
+        return $self;
+    }
+
+    /**
+     * Extra computed fields: bbox, center.
+     */
+    public function withOutputInclude(string $outputInclude): self
+    {
+        $self = clone $this;
+        $self['outputInclude'] = $outputInclude;
+
+        return $self;
+    }
+
+    /**
+     * Coordinate decimal precision (1-15, default 7).
+     */
+    public function withOutputPrecision(int $outputPrecision): self
+    {
+        $self = clone $this;
+        $self['outputPrecision'] = $outputPrecision;
 
         return $self;
     }

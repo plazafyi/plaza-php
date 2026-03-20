@@ -9,6 +9,8 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
+ * List of all available datasets.
+ *
  * @phpstan-import-type DatasetShape from \Plaza\Datasets\Dataset
  *
  * @phpstan-type DatasetListShape = array{datasets: list<Dataset|DatasetShape>}
@@ -18,7 +20,11 @@ final class DatasetList implements BaseModel
     /** @use SdkModel<DatasetListShape> */
     use SdkModel;
 
-    /** @var list<Dataset> $datasets */
+    /**
+     * Array of dataset metadata objects.
+     *
+     * @var list<Dataset> $datasets
+     */
     #[Required(list: Dataset::class)]
     public array $datasets;
 
@@ -58,6 +64,8 @@ final class DatasetList implements BaseModel
     }
 
     /**
+     * Array of dataset metadata objects.
+     *
      * @param list<Dataset|DatasetShape> $datasets
      */
     public function withDatasets(array $datasets): self

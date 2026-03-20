@@ -10,7 +10,7 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\Geocode\GeocodeResult\Type;
 
 /**
- * GeoJSON FeatureCollection of geocoding results.
+ * GeoJSON FeatureCollection of forward geocoding results, ordered by relevance. Content-Type: `application/geo+json`.
  *
  * @phpstan-import-type GeocodingFeatureShape from \Plaza\Geocode\GeocodingFeature
  *
@@ -24,7 +24,11 @@ final class GeocodeResult implements BaseModel
     /** @use SdkModel<GeocodeResultShape> */
     use SdkModel;
 
-    /** @var list<GeocodingFeature> $features */
+    /**
+     * Geocoding results ordered by relevance score.
+     *
+     * @var list<GeocodingFeature> $features
+     */
     #[Required(list: GeocodingFeature::class)]
     public array $features;
 
@@ -70,6 +74,8 @@ final class GeocodeResult implements BaseModel
     }
 
     /**
+     * Geocoding results ordered by relevance score.
+     *
      * @param list<GeocodingFeature|GeocodingFeatureShape> $features
      */
     public function withFeatures(array $features): self

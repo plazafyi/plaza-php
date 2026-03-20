@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Plaza\Elevation\ElevationProfileResult;
 
-use Plaza\Core\Attributes\Optional;
+use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
+ * Elevation profile summary statistics.
+ *
  * @phpstan-type PropertiesShape = array{
- *   avgElevationM?: float|null,
- *   maxElevationM?: float|null,
- *   minElevationM?: float|null,
- *   totalAscentM?: float|null,
- *   totalDescentM?: float|null,
+ *   avgElevationM: float,
+ *   maxElevationM: float,
+ *   minElevationM: float,
+ *   totalAscentM: float,
+ *   totalDescentM: float,
  * }
  */
 final class Properties implements BaseModel
@@ -23,35 +25,60 @@ final class Properties implements BaseModel
     use SdkModel;
 
     /**
-     * Average elevation along profile.
+     * Average elevation along the profile in meters.
      */
-    #[Optional('avg_elevation_m')]
-    public ?float $avgElevationM;
+    #[Required('avg_elevation_m')]
+    public float $avgElevationM;
 
     /**
-     * Maximum elevation along profile.
+     * Maximum elevation along the profile in meters.
      */
-    #[Optional('max_elevation_m')]
-    public ?float $maxElevationM;
+    #[Required('max_elevation_m')]
+    public float $maxElevationM;
 
     /**
-     * Minimum elevation along profile.
+     * Minimum elevation along the profile in meters.
      */
-    #[Optional('min_elevation_m')]
-    public ?float $minElevationM;
+    #[Required('min_elevation_m')]
+    public float $minElevationM;
 
     /**
-     * Total elevation gain in meters.
+     * Total cumulative elevation gain in meters.
      */
-    #[Optional('total_ascent_m')]
-    public ?float $totalAscentM;
+    #[Required('total_ascent_m')]
+    public float $totalAscentM;
 
     /**
-     * Total elevation loss in meters.
+     * Total cumulative elevation loss in meters.
      */
-    #[Optional('total_descent_m')]
-    public ?float $totalDescentM;
+    #[Required('total_descent_m')]
+    public float $totalDescentM;
 
+    /**
+     * `new Properties()` is missing required properties by the API.
+     *
+     * To enforce required parameters use
+     * ```
+     * Properties::with(
+     *   avgElevationM: ...,
+     *   maxElevationM: ...,
+     *   minElevationM: ...,
+     *   totalAscentM: ...,
+     *   totalDescentM: ...,
+     * )
+     * ```
+     *
+     * Otherwise ensure the following setters are called
+     *
+     * ```
+     * (new Properties)
+     *   ->withAvgElevationM(...)
+     *   ->withMaxElevationM(...)
+     *   ->withMinElevationM(...)
+     *   ->withTotalAscentM(...)
+     *   ->withTotalDescentM(...)
+     * ```
+     */
     public function __construct()
     {
         $this->initialize();
@@ -63,25 +90,25 @@ final class Properties implements BaseModel
      * You must use named parameters to construct any parameters with a default value.
      */
     public static function with(
-        ?float $avgElevationM = null,
-        ?float $maxElevationM = null,
-        ?float $minElevationM = null,
-        ?float $totalAscentM = null,
-        ?float $totalDescentM = null,
+        float $avgElevationM,
+        float $maxElevationM,
+        float $minElevationM,
+        float $totalAscentM,
+        float $totalDescentM,
     ): self {
         $self = new self;
 
-        null !== $avgElevationM && $self['avgElevationM'] = $avgElevationM;
-        null !== $maxElevationM && $self['maxElevationM'] = $maxElevationM;
-        null !== $minElevationM && $self['minElevationM'] = $minElevationM;
-        null !== $totalAscentM && $self['totalAscentM'] = $totalAscentM;
-        null !== $totalDescentM && $self['totalDescentM'] = $totalDescentM;
+        $self['avgElevationM'] = $avgElevationM;
+        $self['maxElevationM'] = $maxElevationM;
+        $self['minElevationM'] = $minElevationM;
+        $self['totalAscentM'] = $totalAscentM;
+        $self['totalDescentM'] = $totalDescentM;
 
         return $self;
     }
 
     /**
-     * Average elevation along profile.
+     * Average elevation along the profile in meters.
      */
     public function withAvgElevationM(float $avgElevationM): self
     {
@@ -92,7 +119,7 @@ final class Properties implements BaseModel
     }
 
     /**
-     * Maximum elevation along profile.
+     * Maximum elevation along the profile in meters.
      */
     public function withMaxElevationM(float $maxElevationM): self
     {
@@ -103,7 +130,7 @@ final class Properties implements BaseModel
     }
 
     /**
-     * Minimum elevation along profile.
+     * Minimum elevation along the profile in meters.
      */
     public function withMinElevationM(float $minElevationM): self
     {
@@ -114,7 +141,7 @@ final class Properties implements BaseModel
     }
 
     /**
-     * Total elevation gain in meters.
+     * Total cumulative elevation gain in meters.
      */
     public function withTotalAscentM(float $totalAscentM): self
     {
@@ -125,7 +152,7 @@ final class Properties implements BaseModel
     }
 
     /**
-     * Total elevation loss in meters.
+     * Total cumulative elevation loss in meters.
      */
     public function withTotalDescentM(float $totalDescentM): self
     {

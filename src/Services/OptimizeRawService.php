@@ -10,15 +10,15 @@ use Plaza\Core\Exceptions\APIException;
 use Plaza\Optimize\OptimizeCompletedResult;
 use Plaza\Optimize\OptimizeCreateParams;
 use Plaza\Optimize\OptimizeCreateParams\Mode;
+use Plaza\Optimize\OptimizeCreateParams\Waypoint;
 use Plaza\Optimize\OptimizeJobStatus;
 use Plaza\Optimize\OptimizeProcessingResult;
 use Plaza\Optimize\OptimizeResult;
-use Plaza\PlazaClientService\GeoJsonGeometry;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\OptimizeRawContract;
 
 /**
- * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
+ * @phpstan-import-type WaypointShape from \Plaza\Optimize\OptimizeCreateParams\Waypoint
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 final class OptimizeRawService implements OptimizeRawContract
@@ -35,7 +35,7 @@ final class OptimizeRawService implements OptimizeRawContract
      * Optimize route through waypoints
      *
      * @param array{
-     *   waypoints: GeoJsonGeometry|GeoJsonGeometryShape,
+     *   waypoints: list<Waypoint|WaypointShape>,
      *   mode?: Mode|value-of<Mode>,
      *   roundtrip?: bool,
      * }|OptimizeCreateParams $params
@@ -58,7 +58,6 @@ final class OptimizeRawService implements OptimizeRawContract
         return $this->client->request(
             method: 'post',
             path: 'api/v1/optimize',
-            headers: ['Accept' => 'application/geo+json'],
             body: (object) $parsed,
             options: $options,
             convert: OptimizeResult::class,

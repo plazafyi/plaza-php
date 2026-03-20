@@ -7,6 +7,7 @@ namespace Plaza\Services;
 use Plaza\Client;
 use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
+use Plaza\Core\Util;
 use Plaza\Datasets\Dataset;
 use Plaza\Datasets\DatasetCreateParams;
 use Plaza\Datasets\DatasetFeaturesParams;
@@ -143,7 +144,18 @@ final class DatasetsRawService implements DatasetsRawContract
      * Query features in a dataset
      *
      * @param string $id Dataset ID
-     * @param array{cursor?: string, limit?: int}|DatasetFeaturesParams $params
+     * @param array{
+     *   cursor?: string,
+     *   limit?: int,
+     *   outputBuffer?: float,
+     *   outputCentroid?: bool,
+     *   outputFields?: string,
+     *   outputGeometry?: bool,
+     *   outputInclude?: string,
+     *   outputPrecision?: int,
+     *   outputSimplify?: float,
+     *   outputSort?: string,
+     * }|DatasetFeaturesParams $params
      * @param RequestOpts|null $requestOptions
      *
      * @return BaseResponse<FeatureCollection>
@@ -164,8 +176,19 @@ final class DatasetsRawService implements DatasetsRawContract
         return $this->client->request(
             method: 'get',
             path: ['api/v1/datasets/%1$s/features', $id],
-            query: $parsed,
-            headers: ['Accept' => 'application/geo+json'],
+            query: Util::array_transform_keys(
+                $parsed,
+                [
+                    'outputBuffer' => 'output[buffer]',
+                    'outputCentroid' => 'output[centroid]',
+                    'outputFields' => 'output[fields]',
+                    'outputGeometry' => 'output[geometry]',
+                    'outputInclude' => 'output[include]',
+                    'outputPrecision' => 'output[precision]',
+                    'outputSimplify' => 'output[simplify]',
+                    'outputSort' => 'output[sort]',
+                ],
+            ),
             options: $options,
             convert: FeatureCollection::class,
         );

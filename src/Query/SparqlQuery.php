@@ -9,6 +9,8 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
+ * SPARQL query request. Queries OSM data using SPARQL syntax. Results are returned as a JSON object with a `results` array.
+ *
  * @phpstan-type SparqlQueryShape = array{query: string}
  */
 final class SparqlQuery implements BaseModel

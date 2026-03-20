@@ -9,7 +9,7 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
- * Standard API error response.
+ * Standard API error envelope. Every error response wraps a single `error` object with a machine-readable `code`, a human-readable `message`, and optional structured `details`.
  *
  * @phpstan-import-type ErrorShape from \Plaza\PlazaClientService\Error\Error as ErrorShape1
  *
@@ -22,6 +22,9 @@ final class Error implements BaseModel
     /** @use SdkModel<ErrorShape> */
     use SdkModel;
 
+    /**
+     * Error payload.
+     */
     #[Required]
     public Error\Error $error;
 
@@ -62,6 +65,8 @@ final class Error implements BaseModel
     }
 
     /**
+     * Error payload.
+     *
      * @param Error\Error|ErrorShape1 $error
      */
     public function withError(

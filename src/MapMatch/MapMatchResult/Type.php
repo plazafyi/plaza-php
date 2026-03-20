@@ -6,5 +6,5 @@ namespace Plaza\MapMatch\MapMatchResult;
 
 enum Type: string
 {
-    case FEATURE = 'Feature';
+    case FEATURE_COLLECTION = 'FeatureCollection';
 }
