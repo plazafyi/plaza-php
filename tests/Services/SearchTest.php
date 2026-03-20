@@ -42,6 +42,7 @@ final class SearchTest extends TestCase
         $result = $this->client->search->query(
             q: 'q',
             cursor: 'cursor',
+            format: 'format',
             limit: 0,
             outputFields: 'output[fields]',
             outputInclude: 'output[include]',
@@ -68,6 +69,7 @@ final class SearchTest extends TestCase
         $result = $this->client->search->queryPost(
             q: 'q',
             cursor: 'cursor',
+            format: 'format',
             limit: 0,
             outputFields: 'output[fields]',
             outputInclude: 'output[include]',

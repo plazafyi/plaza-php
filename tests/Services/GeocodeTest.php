@@ -45,6 +45,7 @@ final class GeocodeTest extends TestCase
         $result = $this->client->geocode->autocomplete(
             q: 'q',
             countryCode: 'country_code',
+            format: 'format',
             lang: 'lang',
             lat: 0,
             layer: 'layer',
@@ -71,6 +72,7 @@ final class GeocodeTest extends TestCase
         $result = $this->client->geocode->autocompletePost(
             q: 'q',
             countryCode: 'country_code',
+            format: 'format',
             lang: 'lang',
             lat: 0,
             layer: 'layer',
@@ -116,6 +118,7 @@ final class GeocodeTest extends TestCase
             q: 'q',
             bbox: 'bbox',
             countryCode: 'country_code',
+            format: 'format',
             lang: 'lang',
             lat: 0,
             layer: 'layer',
@@ -143,6 +146,7 @@ final class GeocodeTest extends TestCase
             q: 'q',
             bbox: 'bbox',
             countryCode: 'country_code',
+            format: 'format',
             lang: 'lang',
             lat: 0,
             layer: 'layer',

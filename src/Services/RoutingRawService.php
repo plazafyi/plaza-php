@@ -56,6 +56,7 @@ final class RoutingRawService implements RoutingRawContract
      *   lat: float,
      *   lng: float,
      *   time: float,
+     *   format?: string,
      *   mode?: string,
      *   outputFields?: string,
      *   outputGeometry?: bool,
@@ -106,6 +107,7 @@ final class RoutingRawService implements RoutingRawContract
      *   lat: float,
      *   lng: float,
      *   time: float,
+     *   format?: string,
      *   mode?: string,
      *   outputFields?: string,
      *   outputGeometry?: bool,
@@ -282,6 +284,7 @@ final class RoutingRawService implements RoutingRawContract
      * @param array{
      *   destination: Destination|DestinationShape,
      *   origin: Origin|OriginShape,
+     *   format?: string,
      *   alternatives?: int,
      *   annotations?: bool,
      *   departAt?: \DateTimeInterface|null,
@@ -308,12 +311,14 @@ final class RoutingRawService implements RoutingRawContract
             $params,
             $requestOptions,
         );
+        $query_params = array_flip(['format']);
 
         // @phpstan-ignore-next-line return.type
         return $this->client->request(
             method: 'post',
             path: 'api/v1/route',
-            body: (object) $parsed,
+            query: array_intersect_key($parsed, $query_params),
+            body: (object) array_diff_key($parsed, $query_params),
             options: $options,
             convert: RouteResult::class,
         );

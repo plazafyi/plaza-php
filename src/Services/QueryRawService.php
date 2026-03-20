@@ -65,7 +65,7 @@ final class QueryRawService implements QueryRawContract
      *
      * Execute an Overpass QL query
      *
-     * @param array{data: string}|QueryOverpassParams $params
+     * @param array{data: string, format?: string}|QueryOverpassParams $params
      * @param RequestOpts|null $requestOptions
      *
      * @return BaseResponse<FeatureCollection>
@@ -80,12 +80,14 @@ final class QueryRawService implements QueryRawContract
             $params,
             $requestOptions,
         );
+        $query_params = array_flip(['format']);
 
         // @phpstan-ignore-next-line return.type
         return $this->client->request(
             method: 'post',
             path: 'api/v1/overpass',
-            body: (object) $parsed,
+            query: array_intersect_key($parsed, $query_params),
+            body: (object) array_diff_key($parsed, $query_params),
             options: $options,
             convert: FeatureCollection::class,
         );

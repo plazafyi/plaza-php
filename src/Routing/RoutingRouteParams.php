@@ -31,6 +31,7 @@ use Plaza\Routing\RoutingRouteParams\Waypoint;
  * @phpstan-type RoutingRouteParamsShape = array{
  *   destination: Destination|DestinationShape,
  *   origin: Origin|OriginShape,
+ *   format?: string|null,
  *   alternatives?: int|null,
  *   annotations?: bool|null,
  *   departAt?: \DateTimeInterface|null,
@@ -61,6 +62,12 @@ final class RoutingRouteParams implements BaseModel
      */
     #[Required]
     public Origin $origin;
+
+    /**
+     * Response format for alternatives: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Number of alternative routes to return (0-3, default 0). When > 0, response is a FeatureCollection of route Features.
@@ -174,6 +181,7 @@ final class RoutingRouteParams implements BaseModel
     public static function with(
         Destination|array $destination,
         Origin|array $origin,
+        ?string $format = null,
         ?int $alternatives = null,
         ?bool $annotations = null,
         ?\DateTimeInterface $departAt = null,
@@ -191,6 +199,7 @@ final class RoutingRouteParams implements BaseModel
         $self['destination'] = $destination;
         $self['origin'] = $origin;
 
+        null !== $format && $self['format'] = $format;
         null !== $alternatives && $self['alternatives'] = $alternatives;
         null !== $annotations && $self['annotations'] = $annotations;
         null !== $departAt && $self['departAt'] = $departAt;
@@ -228,6 +237,17 @@ final class RoutingRouteParams implements BaseModel
     {
         $self = clone $this;
         $self['origin'] = $origin;
+
+        return $self;
+    }
+
+    /**
+     * Response format for alternatives: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

@@ -21,6 +21,7 @@ interface GeocodeContract
      *
      * @param string $q Partial address query
      * @param string $countryCode ISO 3166-1 alpha-2 country code filter
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Focus latitude
      * @param string $layer Filter by layer: address, poi, or admin
@@ -33,6 +34,7 @@ interface GeocodeContract
     public function autocomplete(
         string $q,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -46,6 +48,7 @@ interface GeocodeContract
      *
      * @param string $q Partial address query
      * @param string $countryCode ISO 3166-1 alpha-2 country code filter
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Focus latitude
      * @param string $layer Filter by layer: address, poi, or admin
@@ -58,6 +61,7 @@ interface GeocodeContract
     public function autocompletePost(
         string $q,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -85,6 +89,7 @@ interface GeocodeContract
      * @param string $q Address or place name
      * @param string $bbox Bounding box filter: south,west,north,east
      * @param string $countryCode ISO 3166-1 alpha-2 country code filter
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Focus latitude
      * @param string $layer Filter by layer: address, poi, or admin
@@ -98,6 +103,7 @@ interface GeocodeContract
         string $q,
         ?string $bbox = null,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -112,6 +118,7 @@ interface GeocodeContract
      * @param string $q Address or place name
      * @param string $bbox Bounding box filter: south,west,north,east
      * @param string $countryCode ISO 3166-1 alpha-2 country code filter
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Focus latitude
      * @param string $layer Filter by layer: address, poi, or admin
@@ -125,6 +132,7 @@ interface GeocodeContract
         string $q,
         ?string $bbox = null,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -136,6 +144,7 @@ interface GeocodeContract
     /**
      * @api
      *
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Legacy shorthand. Latitude. Use near param instead.
      * @param string $layer Filter by layer: house or poi
@@ -148,6 +157,7 @@ interface GeocodeContract
      * @throws APIException
      */
     public function reverse(
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -161,6 +171,7 @@ interface GeocodeContract
     /**
      * @api
      *
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Legacy shorthand. Latitude. Use near param instead.
      * @param string $layer Filter by layer: house or poi
@@ -173,6 +184,7 @@ interface GeocodeContract
      * @throws APIException
      */
     public function reversePost(
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,

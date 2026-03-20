@@ -38,7 +38,7 @@ final class ElevationRawService implements ElevationRawContract
      * Look up elevation for multiple coordinates
      *
      * @param array{
-     *   coordinates: list<Coordinate|CoordinateShape>
+     *   coordinates: list<Coordinate|CoordinateShape>, format?: string
      * }|ElevationBatchParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -54,12 +54,14 @@ final class ElevationRawService implements ElevationRawContract
             $params,
             $requestOptions,
         );
+        $query_params = array_flip(['format']);
 
         // @phpstan-ignore-next-line return.type
         return $this->client->request(
             method: 'post',
             path: 'api/v1/elevation/batch',
-            body: (object) $parsed,
+            query: array_intersect_key($parsed, $query_params),
+            body: (object) array_diff_key($parsed, $query_params),
             options: $options,
             convert: ElevationBatchResult::class,
         );
@@ -71,6 +73,7 @@ final class ElevationRawService implements ElevationRawContract
      * Look up elevation at one or more points
      *
      * @param array{
+     *   format?: string,
      *   lat?: float,
      *   lng?: float,
      *   locations?: string,
@@ -116,6 +119,7 @@ final class ElevationRawService implements ElevationRawContract
      * Look up elevation at one or more points
      *
      * @param array{
+     *   format?: string,
      *   lat?: float,
      *   lng?: float,
      *   locations?: string,

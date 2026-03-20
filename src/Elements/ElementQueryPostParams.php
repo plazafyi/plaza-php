@@ -19,6 +19,7 @@ use Plaza\Core\Contracts\BaseModel;
  *   contains?: string|null,
  *   crosses?: string|null,
  *   cursor?: string|null,
+ *   format?: string|null,
  *   h3?: string|null,
  *   intersects?: string|null,
  *   limit?: int|null,
@@ -66,6 +67,12 @@ final class ElementQueryPostParams implements BaseModel
      */
     #[Optional]
     public ?string $cursor;
+
+    /**
+     * Response format. json (default) returns paginated GeoJSON. geojson/csv/ndjson stream via chunked transfer encoding.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Legacy shorthand. H3 cell index. Use spatial predicates instead.
@@ -178,6 +185,7 @@ final class ElementQueryPostParams implements BaseModel
         ?string $contains = null,
         ?string $crosses = null,
         ?string $cursor = null,
+        ?string $format = null,
         ?string $h3 = null,
         ?string $intersects = null,
         ?int $limit = null,
@@ -201,6 +209,7 @@ final class ElementQueryPostParams implements BaseModel
         null !== $contains && $self['contains'] = $contains;
         null !== $crosses && $self['crosses'] = $crosses;
         null !== $cursor && $self['cursor'] = $cursor;
+        null !== $format && $self['format'] = $format;
         null !== $h3 && $self['h3'] = $h3;
         null !== $intersects && $self['intersects'] = $intersects;
         null !== $limit && $self['limit'] = $limit;
@@ -261,6 +270,17 @@ final class ElementQueryPostParams implements BaseModel
     {
         $self = clone $this;
         $self['cursor'] = $cursor;
+
+        return $self;
+    }
+
+    /**
+     * Response format. json (default) returns paginated GeoJSON. geojson/csv/ndjson stream via chunked transfer encoding.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

@@ -39,21 +39,28 @@ final class OptimizeService implements OptimizeContract
      *
      * Optimize route through waypoints
      *
-     * @param list<Waypoint|WaypointShape> $waypoints Waypoints to visit in optimized order (2-50 points)
-     * @param Mode|value-of<Mode> $mode Travel mode (default: `auto`)
-     * @param bool $roundtrip Whether the route should return to the starting waypoint (default: true)
+     * @param list<Waypoint|WaypointShape> $waypoints Body param: Waypoints to visit in optimized order (2-50 points)
+     * @param string $format Query param: Response format: json (default), geojson, csv, ndjson
+     * @param Mode|value-of<Mode> $mode Body param: Travel mode (default: `auto`)
+     * @param bool $roundtrip Body param: Whether the route should return to the starting waypoint (default: true)
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function create(
         array $waypoints,
+        ?string $format = null,
         Mode|string $mode = 'auto',
         bool $roundtrip = true,
         RequestOptions|array|null $requestOptions = null,
     ): OptimizeCompletedResult|OptimizeProcessingResult {
         $params = Util::removeNulls(
-            ['waypoints' => $waypoints, 'mode' => $mode, 'roundtrip' => $roundtrip]
+            [
+                'waypoints' => $waypoints,
+                'format' => $format,
+                'mode' => $mode,
+                'roundtrip' => $roundtrip,
+            ],
         );
 
         // @phpstan-ignore-next-line argument.type

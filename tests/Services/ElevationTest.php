@@ -49,6 +49,7 @@ final class ElevationTest extends TestCase
             coordinates: [
                 ['lat' => 48.8566, 'lng' => 2.3522], ['lat' => 45.764, 'lng' => 4.8357],
             ],
+            format: 'format',
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType

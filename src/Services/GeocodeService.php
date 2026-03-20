@@ -39,6 +39,7 @@ final class GeocodeService implements GeocodeContract
      *
      * @param string $q Partial address query
      * @param string $countryCode ISO 3166-1 alpha-2 country code filter
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Focus latitude
      * @param string $layer Filter by layer: address, poi, or admin
@@ -51,6 +52,7 @@ final class GeocodeService implements GeocodeContract
     public function autocomplete(
         string $q,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -62,6 +64,7 @@ final class GeocodeService implements GeocodeContract
             [
                 'q' => $q,
                 'countryCode' => $countryCode,
+                'format' => $format,
                 'lang' => $lang,
                 'lat' => $lat,
                 'layer' => $layer,
@@ -83,6 +86,7 @@ final class GeocodeService implements GeocodeContract
      *
      * @param string $q Partial address query
      * @param string $countryCode ISO 3166-1 alpha-2 country code filter
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Focus latitude
      * @param string $layer Filter by layer: address, poi, or admin
@@ -95,6 +99,7 @@ final class GeocodeService implements GeocodeContract
     public function autocompletePost(
         string $q,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -106,6 +111,7 @@ final class GeocodeService implements GeocodeContract
             [
                 'q' => $q,
                 'countryCode' => $countryCode,
+                'format' => $format,
                 'lang' => $lang,
                 'lat' => $lat,
                 'layer' => $layer,
@@ -150,6 +156,7 @@ final class GeocodeService implements GeocodeContract
      * @param string $q Address or place name
      * @param string $bbox Bounding box filter: south,west,north,east
      * @param string $countryCode ISO 3166-1 alpha-2 country code filter
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Focus latitude
      * @param string $layer Filter by layer: address, poi, or admin
@@ -163,6 +170,7 @@ final class GeocodeService implements GeocodeContract
         string $q,
         ?string $bbox = null,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -175,6 +183,7 @@ final class GeocodeService implements GeocodeContract
                 'q' => $q,
                 'bbox' => $bbox,
                 'countryCode' => $countryCode,
+                'format' => $format,
                 'lang' => $lang,
                 'lat' => $lat,
                 'layer' => $layer,
@@ -197,6 +206,7 @@ final class GeocodeService implements GeocodeContract
      * @param string $q Address or place name
      * @param string $bbox Bounding box filter: south,west,north,east
      * @param string $countryCode ISO 3166-1 alpha-2 country code filter
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Focus latitude
      * @param string $layer Filter by layer: address, poi, or admin
@@ -210,6 +220,7 @@ final class GeocodeService implements GeocodeContract
         string $q,
         ?string $bbox = null,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -222,6 +233,7 @@ final class GeocodeService implements GeocodeContract
                 'q' => $q,
                 'bbox' => $bbox,
                 'countryCode' => $countryCode,
+                'format' => $format,
                 'lang' => $lang,
                 'lat' => $lat,
                 'layer' => $layer,
@@ -241,6 +253,7 @@ final class GeocodeService implements GeocodeContract
      *
      * Reverse geocode a coordinate
      *
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Legacy shorthand. Latitude. Use near param instead.
      * @param string $layer Filter by layer: house or poi
@@ -253,6 +266,7 @@ final class GeocodeService implements GeocodeContract
      * @throws APIException
      */
     public function reverse(
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -264,6 +278,7 @@ final class GeocodeService implements GeocodeContract
     ): ReverseGeocodeResult {
         $params = Util::removeNulls(
             [
+                'format' => $format,
                 'lang' => $lang,
                 'lat' => $lat,
                 'layer' => $layer,
@@ -285,6 +300,7 @@ final class GeocodeService implements GeocodeContract
      *
      * Reverse geocode a coordinate
      *
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $lang Language code for localized names (e.g. en, de, fr)
      * @param float $lat Legacy shorthand. Latitude. Use near param instead.
      * @param string $layer Filter by layer: house or poi
@@ -297,6 +313,7 @@ final class GeocodeService implements GeocodeContract
      * @throws APIException
      */
     public function reversePost(
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -308,6 +325,7 @@ final class GeocodeService implements GeocodeContract
     ): ReverseGeocodeResult {
         $params = Util::removeNulls(
             [
+                'format' => $format,
                 'lang' => $lang,
                 'lat' => $lat,
                 'layer' => $layer,

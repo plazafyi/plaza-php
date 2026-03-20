@@ -33,14 +33,16 @@ interface QueryContract
     /**
      * @api
      *
-     * @param string $data Overpass QL query string
+     * @param string $data Body param: Overpass QL query string
+     * @param string $format Query param: Response format: json (default), geojson, csv, ndjson
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function overpass(
         string $data,
-        RequestOptions|array|null $requestOptions = null
+        ?string $format = null,
+        RequestOptions|array|null $requestOptions = null,
     ): FeatureCollection;
 
     /**

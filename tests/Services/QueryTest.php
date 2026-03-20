@@ -64,7 +64,8 @@ final class QueryTest extends TestCase
     public function testOverpassWithOptionalParams(): void
     {
         $result = $this->client->query->overpass(
-            data: '[out:json];node[amenity=cafe](around:500,48.8566,2.3522);out body;'
+            data: '[out:json];node[amenity=cafe](around:500,48.8566,2.3522);out body;',
+            format: 'format',
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType

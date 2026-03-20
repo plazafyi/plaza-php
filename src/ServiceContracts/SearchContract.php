@@ -18,6 +18,7 @@ interface SearchContract
      *
      * @param string $q Search query string
      * @param string $cursor Cursor for pagination
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param int $limit Maximum results (default 25, max 100)
      * @param string $outputFields Comma-separated property fields to include
      * @param string $outputInclude Extra computed fields: bbox, distance, center
@@ -30,6 +31,7 @@ interface SearchContract
     public function query(
         string $q,
         ?string $cursor = null,
+        ?string $format = null,
         ?int $limit = null,
         ?string $outputFields = null,
         ?string $outputInclude = null,
@@ -43,6 +45,7 @@ interface SearchContract
      *
      * @param string $q Search query string
      * @param string $cursor Cursor for pagination
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param int $limit Maximum results (default 25, max 100)
      * @param string $outputFields Comma-separated property fields to include
      * @param string $outputInclude Extra computed fields: bbox, distance, center
@@ -55,6 +58,7 @@ interface SearchContract
     public function queryPost(
         string $q,
         ?string $cursor = null,
+        ?string $format = null,
         ?int $limit = null,
         ?string $outputFields = null,
         ?string $outputInclude = null,
