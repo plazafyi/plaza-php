@@ -32,7 +32,7 @@ class ClientTest extends TestCase
             requestOptions: ['transporter' => $transporter],
         );
 
-        $client->elements->nearby(lat: 0, lng: 0);
+        $client->elements->query();
 
         $this->assertNotFalse($requested = $transporter->getRequests()[0] ?? false);
 

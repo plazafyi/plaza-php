@@ -61,7 +61,7 @@ final class ElementsService implements ElementsContract
      *
      * Fetch multiple features by type and ID
      *
-     * @param list<Element|ElementShape> $elements
+     * @param list<Element|ElementShape> $elements Array of element references to fetch
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
@@ -81,25 +81,75 @@ final class ElementsService implements ElementsContract
     /**
      * @api
      *
+     * Get feature by type and ID
+     *
+     * @param RequestOpts|null $requestOptions
+     *
+     * @throws APIException
+     */
+    public function lookup(
+        RequestOptions|array|null $requestOptions = null
+    ): GeoJsonFeature {
+        // @phpstan-ignore-next-line argument.type
+        $response = $this->raw->lookup(requestOptions: $requestOptions);
+
+        return $response->parse();
+    }
+
+    /**
+     * @api
+     *
      * Find features near a geographic point
      *
-     * @param float $lat Latitude (-90 to 90)
-     * @param float $lng Longitude (-180 to 180)
+     * @param float $lat Legacy shorthand. Latitude (-90 to 90). Use near param instead.
      * @param int $limit Maximum results (default 20, max 100)
+     * @param float $lng Legacy shorthand. Longitude (-180 to 180). Use near param instead.
+     * @param string $near Point geometry for proximity search (lat,lng or GeoJSON). Alternative to lat/lng params.
+     * @param float $outputBuffer Buffer geometry by meters
+     * @param bool $outputCentroid Replace geometry with centroid
+     * @param string $outputFields Comma-separated property fields to include
+     * @param bool $outputGeometry Include geometry (default true)
+     * @param string $outputInclude Extra computed fields: bbox, distance, center
+     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
+     * @param float $outputSimplify Simplify geometry tolerance in meters
+     * @param string $outputSort Sort by: distance, name, osm_id
      * @param int $radius Search radius in meters (default 500, max 10000)
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function nearby(
-        float $lat,
-        float $lng,
+        ?float $lat = null,
         ?int $limit = null,
+        ?float $lng = null,
+        ?string $near = null,
+        ?float $outputBuffer = null,
+        ?bool $outputCentroid = null,
+        ?string $outputFields = null,
+        ?bool $outputGeometry = null,
+        ?string $outputInclude = null,
+        ?int $outputPrecision = null,
+        ?float $outputSimplify = null,
+        ?string $outputSort = null,
         ?int $radius = null,
         RequestOptions|array|null $requestOptions = null,
     ): FeatureCollection {
         $params = Util::removeNulls(
-            ['lat' => $lat, 'lng' => $lng, 'limit' => $limit, 'radius' => $radius]
+            [
+                'lat' => $lat,
+                'limit' => $limit,
+                'lng' => $lng,
+                'near' => $near,
+                'outputBuffer' => $outputBuffer,
+                'outputCentroid' => $outputCentroid,
+                'outputFields' => $outputFields,
+                'outputGeometry' => $outputGeometry,
+                'outputInclude' => $outputInclude,
+                'outputPrecision' => $outputPrecision,
+                'outputSimplify' => $outputSimplify,
+                'outputSort' => $outputSort,
+                'radius' => $radius,
+            ],
         );
 
         // @phpstan-ignore-next-line argument.type
@@ -111,37 +161,227 @@ final class ElementsService implements ElementsContract
     /**
      * @api
      *
-     * Query features by bounding box or H3 cell
+     * Find features near a geographic point
      *
-     * @param string $bbox Bounding box: south,west,north,east. At least one of bbox or h3 is required.
+     * @param float $lat Legacy shorthand. Latitude (-90 to 90). Use near param instead.
+     * @param int $limit Maximum results (default 20, max 100)
+     * @param float $lng Legacy shorthand. Longitude (-180 to 180). Use near param instead.
+     * @param string $near Point geometry for proximity search (lat,lng or GeoJSON). Alternative to lat/lng params.
+     * @param float $outputBuffer Buffer geometry by meters
+     * @param bool $outputCentroid Replace geometry with centroid
+     * @param string $outputFields Comma-separated property fields to include
+     * @param bool $outputGeometry Include geometry (default true)
+     * @param string $outputInclude Extra computed fields: bbox, distance, center
+     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
+     * @param float $outputSimplify Simplify geometry tolerance in meters
+     * @param string $outputSort Sort by: distance, name, osm_id
+     * @param int $radius Search radius in meters (default 500, max 10000)
+     * @param RequestOpts|null $requestOptions
+     *
+     * @throws APIException
+     */
+    public function nearbyPost(
+        ?float $lat = null,
+        ?int $limit = null,
+        ?float $lng = null,
+        ?string $near = null,
+        ?float $outputBuffer = null,
+        ?bool $outputCentroid = null,
+        ?string $outputFields = null,
+        ?bool $outputGeometry = null,
+        ?string $outputInclude = null,
+        ?int $outputPrecision = null,
+        ?float $outputSimplify = null,
+        ?string $outputSort = null,
+        ?int $radius = null,
+        RequestOptions|array|null $requestOptions = null,
+    ): FeatureCollection {
+        $params = Util::removeNulls(
+            [
+                'lat' => $lat,
+                'limit' => $limit,
+                'lng' => $lng,
+                'near' => $near,
+                'outputBuffer' => $outputBuffer,
+                'outputCentroid' => $outputCentroid,
+                'outputFields' => $outputFields,
+                'outputGeometry' => $outputGeometry,
+                'outputInclude' => $outputInclude,
+                'outputPrecision' => $outputPrecision,
+                'outputSimplify' => $outputSimplify,
+                'outputSort' => $outputSort,
+                'radius' => $radius,
+            ],
+        );
+
+        // @phpstan-ignore-next-line argument.type
+        $response = $this->raw->nearbyPost(params: $params, requestOptions: $requestOptions);
+
+        return $response->parse();
+    }
+
+    /**
+     * @api
+     *
+     * Query features by spatial predicate, bounding box, or H3 cell
+     *
+     * @param string $bbox Legacy shorthand. Bounding box: south,west,north,east. Use spatial predicates (near, within, intersects) instead.
+     * @param string $contains Geometry that features must contain
+     * @param string $crosses Geometry that features must cross
      * @param string $cursor Cursor for pagination
-     * @param string $h3 H3 cell index. At least one of bbox or h3 is required.
+     * @param string $h3 Legacy shorthand. H3 cell index. Use spatial predicates instead.
+     * @param string $intersects Geometry that features must intersect
      * @param int $limit Maximum results (default 100, max 10000)
+     * @param string $near Point geometry for proximity search (lat,lng). Requires radius.
+     * @param float $outputBuffer Buffer geometry by meters
+     * @param bool $outputCentroid Replace geometry with centroid
+     * @param string $outputFields Comma-separated property fields to include
+     * @param bool $outputGeometry Include geometry (default true)
+     * @param string $outputInclude Extra computed fields: bbox, distance, center
+     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
+     * @param float $outputSimplify Simplify geometry tolerance in meters
+     * @param string $outputSort Sort by: distance, name, osm_id
+     * @param float $radius Search radius in meters (for near) or buffer distance (for other predicates)
+     * @param string $touches Geometry that features must touch
      * @param string $type Element types (comma-separated: node,way,relation)
+     * @param string $within Geometry that features must be within
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function query(
         ?string $bbox = null,
+        ?string $contains = null,
+        ?string $crosses = null,
         ?string $cursor = null,
         ?string $h3 = null,
+        ?string $intersects = null,
         ?int $limit = null,
+        ?string $near = null,
+        ?float $outputBuffer = null,
+        ?bool $outputCentroid = null,
+        ?string $outputFields = null,
+        ?bool $outputGeometry = null,
+        ?string $outputInclude = null,
+        ?int $outputPrecision = null,
+        ?float $outputSimplify = null,
+        ?string $outputSort = null,
+        ?float $radius = null,
+        ?string $touches = null,
         ?string $type = null,
+        ?string $within = null,
         RequestOptions|array|null $requestOptions = null,
     ): FeatureCollection {
         $params = Util::removeNulls(
             [
                 'bbox' => $bbox,
+                'contains' => $contains,
+                'crosses' => $crosses,
                 'cursor' => $cursor,
                 'h3' => $h3,
+                'intersects' => $intersects,
                 'limit' => $limit,
+                'near' => $near,
+                'outputBuffer' => $outputBuffer,
+                'outputCentroid' => $outputCentroid,
+                'outputFields' => $outputFields,
+                'outputGeometry' => $outputGeometry,
+                'outputInclude' => $outputInclude,
+                'outputPrecision' => $outputPrecision,
+                'outputSimplify' => $outputSimplify,
+                'outputSort' => $outputSort,
+                'radius' => $radius,
+                'touches' => $touches,
                 'type' => $type,
+                'within' => $within,
             ],
         );
 
         // @phpstan-ignore-next-line argument.type
         $response = $this->raw->query(params: $params, requestOptions: $requestOptions);
+
+        return $response->parse();
+    }
+
+    /**
+     * @api
+     *
+     * Query features by spatial predicate, bounding box, or H3 cell
+     *
+     * @param string $bbox Legacy shorthand. Bounding box: south,west,north,east. Use spatial predicates (near, within, intersects) instead.
+     * @param string $contains Geometry that features must contain
+     * @param string $crosses Geometry that features must cross
+     * @param string $cursor Cursor for pagination
+     * @param string $h3 Legacy shorthand. H3 cell index. Use spatial predicates instead.
+     * @param string $intersects Geometry that features must intersect
+     * @param int $limit Maximum results (default 100, max 10000)
+     * @param string $near Point geometry for proximity search (lat,lng). Requires radius.
+     * @param float $outputBuffer Buffer geometry by meters
+     * @param bool $outputCentroid Replace geometry with centroid
+     * @param string $outputFields Comma-separated property fields to include
+     * @param bool $outputGeometry Include geometry (default true)
+     * @param string $outputInclude Extra computed fields: bbox, distance, center
+     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
+     * @param float $outputSimplify Simplify geometry tolerance in meters
+     * @param string $outputSort Sort by: distance, name, osm_id
+     * @param float $radius Search radius in meters (for near) or buffer distance (for other predicates)
+     * @param string $touches Geometry that features must touch
+     * @param string $type Element types (comma-separated: node,way,relation)
+     * @param string $within Geometry that features must be within
+     * @param RequestOpts|null $requestOptions
+     *
+     * @throws APIException
+     */
+    public function queryPost(
+        ?string $bbox = null,
+        ?string $contains = null,
+        ?string $crosses = null,
+        ?string $cursor = null,
+        ?string $h3 = null,
+        ?string $intersects = null,
+        ?int $limit = null,
+        ?string $near = null,
+        ?float $outputBuffer = null,
+        ?bool $outputCentroid = null,
+        ?string $outputFields = null,
+        ?bool $outputGeometry = null,
+        ?string $outputInclude = null,
+        ?int $outputPrecision = null,
+        ?float $outputSimplify = null,
+        ?string $outputSort = null,
+        ?float $radius = null,
+        ?string $touches = null,
+        ?string $type = null,
+        ?string $within = null,
+        RequestOptions|array|null $requestOptions = null,
+    ): FeatureCollection {
+        $params = Util::removeNulls(
+            [
+                'bbox' => $bbox,
+                'contains' => $contains,
+                'crosses' => $crosses,
+                'cursor' => $cursor,
+                'h3' => $h3,
+                'intersects' => $intersects,
+                'limit' => $limit,
+                'near' => $near,
+                'outputBuffer' => $outputBuffer,
+                'outputCentroid' => $outputCentroid,
+                'outputFields' => $outputFields,
+                'outputGeometry' => $outputGeometry,
+                'outputInclude' => $outputInclude,
+                'outputPrecision' => $outputPrecision,
+                'outputSimplify' => $outputSimplify,
+                'outputSort' => $outputSort,
+                'radius' => $radius,
+                'touches' => $touches,
+                'type' => $type,
+                'within' => $within,
+            ],
+        );
+
+        // @phpstan-ignore-next-line argument.type
+        $response = $this->raw->queryPost(params: $params, requestOptions: $requestOptions);
 
         return $response->parse();
     }

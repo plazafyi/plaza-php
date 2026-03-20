@@ -7,17 +7,14 @@ namespace Plaza\Query;
 use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\PlazaClientService\GeoJsonFeature;
-use Plaza\Query\SparqlResult\Type;
+use Plaza\Query\SparqlResult\Result;
 
 /**
- * GeoJSON FeatureCollection of SPARQL query results.
+ * SPARQL query result. Contains a `results` array of GeoJSON Feature objects. Unlike REST feature endpoints, SPARQL results may omit `@var`, `@id`, and compound `id` fields depending on the query shape.
  *
- * @phpstan-import-type GeoJsonFeatureShape from \Plaza\PlazaClientService\GeoJsonFeature
+ * @phpstan-import-type ResultShape from \Plaza\Query\SparqlResult\Result
  *
- * @phpstan-type SparqlResultShape = array{
- *   features: list<GeoJsonFeature|GeoJsonFeatureShape>, type: Type|value-of<Type>
- * }
+ * @phpstan-type SparqlResultShape = array{results: list<Result|ResultShape>}
  */
 final class SparqlResult implements BaseModel
 {
@@ -25,29 +22,25 @@ final class SparqlResult implements BaseModel
     use SdkModel;
 
     /**
-     * GeoJSON features from SPARQL query.
+     * Array of GeoJSON Features matching the SPARQL query. Features include `@var` and `@id` metadata when the source element type is known, but may contain only tags as properties for untyped results.
      *
-     * @var list<GeoJsonFeature> $features
+     * @var list<Result> $results
      */
-    #[Required(list: GeoJsonFeature::class)]
-    public array $features;
-
-    /** @var value-of<Type> $type */
-    #[Required(enum: Type::class)]
-    public string $type;
+    #[Required(list: Result::class)]
+    public array $results;
 
     /**
      * `new SparqlResult()` is missing required properties by the API.
      *
      * To enforce required parameters use
      * ```
-     * SparqlResult::with(features: ..., type: ...)
+     * SparqlResult::with(results: ...)
      * ```
      *
      * Otherwise ensure the following setters are called
      *
      * ```
-     * (new SparqlResult)->withFeatures(...)->withType(...)
+     * (new SparqlResult)->withResults(...)
      * ```
      */
     public function __construct()
@@ -60,39 +53,26 @@ final class SparqlResult implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param list<GeoJsonFeature|GeoJsonFeatureShape> $features
-     * @param Type|value-of<Type> $type
+     * @param list<Result|ResultShape> $results
      */
-    public static function with(array $features, Type|string $type): self
+    public static function with(array $results): self
     {
         $self = new self;
 
-        $self['features'] = $features;
-        $self['type'] = $type;
+        $self['results'] = $results;
 
         return $self;
     }
 
     /**
-     * GeoJSON features from SPARQL query.
+     * Array of GeoJSON Features matching the SPARQL query. Features include `@var` and `@id` metadata when the source element type is known, but may contain only tags as properties for untyped results.
      *
-     * @param list<GeoJsonFeature|GeoJsonFeatureShape> $features
+     * @param list<Result|ResultShape> $results
      */
-    public function withFeatures(array $features): self
+    public function withResults(array $results): self
     {
         $self = clone $this;
-        $self['features'] = $features;
-
-        return $self;
-    }
-
-    /**
-     * @param Type|value-of<Type> $type
-     */
-    public function withType(Type|string $type): self
-    {
-        $self = clone $this;
-        $self['type'] = $type;
+        $self['results'] = $results;
 
         return $self;
     }

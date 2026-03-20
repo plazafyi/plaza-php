@@ -8,17 +8,17 @@ use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\PlazaClientService\GeoJsonGeometry;
+use Plaza\Elevation\ElevationProfileParams\Coordinate;
 
 /**
  * Elevation profile along coordinates.
  *
  * @see Plaza\Services\ElevationService::profile()
  *
- * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
+ * @phpstan-import-type CoordinateShape from \Plaza\Elevation\ElevationProfileParams\Coordinate
  *
  * @phpstan-type ElevationProfileParamsShape = array{
- *   geometry: GeoJsonGeometry|GeoJsonGeometryShape
+ *   coordinates: list<Coordinate|CoordinateShape>
  * }
  */
 final class ElevationProfileParams implements BaseModel
@@ -28,23 +28,25 @@ final class ElevationProfileParams implements BaseModel
     use SdkParams;
 
     /**
-     * Path to profile (GeoJSON LineString geometry, minimum 2 points).
+     * Path coordinates in order of travel (min 2, max 50).
+     *
+     * @var list<Coordinate> $coordinates
      */
-    #[Required]
-    public GeoJsonGeometry $geometry;
+    #[Required(list: Coordinate::class)]
+    public array $coordinates;
 
     /**
      * `new ElevationProfileParams()` is missing required properties by the API.
      *
      * To enforce required parameters use
      * ```
-     * ElevationProfileParams::with(geometry: ...)
+     * ElevationProfileParams::with(coordinates: ...)
      * ```
      *
      * Otherwise ensure the following setters are called
      *
      * ```
-     * (new ElevationProfileParams)->withGeometry(...)
+     * (new ElevationProfileParams)->withCoordinates(...)
      * ```
      */
     public function __construct()
@@ -57,26 +59,26 @@ final class ElevationProfileParams implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
+     * @param list<Coordinate|CoordinateShape> $coordinates
      */
-    public static function with(GeoJsonGeometry|array $geometry): self
+    public static function with(array $coordinates): self
     {
         $self = new self;
 
-        $self['geometry'] = $geometry;
+        $self['coordinates'] = $coordinates;
 
         return $self;
     }
 
     /**
-     * Path to profile (GeoJSON LineString geometry, minimum 2 points).
+     * Path coordinates in order of travel (min 2, max 50).
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
+     * @param list<Coordinate|CoordinateShape> $coordinates
      */
-    public function withGeometry(GeoJsonGeometry|array $geometry): self
+    public function withCoordinates(array $coordinates): self
     {
         $self = clone $this;
-        $self['geometry'] = $geometry;
+        $self['coordinates'] = $coordinates;
 
         return $self;
     }

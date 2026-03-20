@@ -12,6 +12,8 @@ use Plaza\Routing\RouteResult\Properties;
 use Plaza\Routing\RouteResult\Type;
 
 /**
+ * GeoJSON Feature representing a calculated route. The geometry is a LineString or MultiLineString of the route path. When `alternatives > 0`, the response is a FeatureCollection containing multiple route Features.
+ *
  * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
  * @phpstan-import-type PropertiesShape from \Plaza\Routing\RouteResult\Properties
  *
@@ -26,9 +28,15 @@ final class RouteResult implements BaseModel
     /** @use SdkModel<RouteResultShape> */
     use SdkModel;
 
+    /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     */
     #[Required]
     public GeoJsonGeometry $geometry;
 
+    /**
+     * Route metadata.
+     */
     #[Required]
     public Properties $properties;
 
@@ -79,6 +87,8 @@ final class RouteResult implements BaseModel
     }
 
     /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     *
      * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
      */
     public function withGeometry(GeoJsonGeometry|array $geometry): self
@@ -90,6 +100,8 @@ final class RouteResult implements BaseModel
     }
 
     /**
+     * Route metadata.
+     *
      * @param Properties|PropertiesShape $properties
      */
     public function withProperties(Properties|array $properties): self

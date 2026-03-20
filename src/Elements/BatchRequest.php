@@ -10,6 +10,8 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\Elements\BatchRequest\Element;
 
 /**
+ * Fetch multiple OSM elements by their type and ID in a single request. Maximum 100 elements per batch.
+ *
  * @phpstan-import-type ElementShape from \Plaza\Elements\BatchRequest\Element
  *
  * @phpstan-type BatchRequestShape = array{elements: list<Element|ElementShape>}
@@ -19,7 +21,11 @@ final class BatchRequest implements BaseModel
     /** @use SdkModel<BatchRequestShape> */
     use SdkModel;
 
-    /** @var list<Element> $elements */
+    /**
+     * Array of element references to fetch.
+     *
+     * @var list<Element> $elements
+     */
     #[Required(list: Element::class)]
     public array $elements;
 
@@ -59,6 +65,8 @@ final class BatchRequest implements BaseModel
     }
 
     /**
+     * Array of element references to fetch.
+     *
      * @param list<Element|ElementShape> $elements
      */
     public function withElements(array $elements): self

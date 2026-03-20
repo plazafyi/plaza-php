@@ -10,7 +10,7 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\Optimize\OptimizeProcessingResult\Status;
 
 /**
- * Async optimization in progress — poll with the job_id.
+ * Async optimization in progress. Poll `GET /api/v1/optimize/{job_id}` until the status changes to `completed` or `failed`.
  *
  * @phpstan-type OptimizeProcessingResultShape = array{
  *   jobID: string, status: Status|value-of<Status>
@@ -22,13 +22,13 @@ final class OptimizeProcessingResult implements BaseModel
     use SdkModel;
 
     /**
-     * Job ID for polling.
+     * Job ID for polling the result.
      */
     #[Required('job_id')]
     public string $jobID;
 
     /**
-     * Job status.
+     * Always `processing`.
      *
      * @var value-of<Status> $status
      */
@@ -72,7 +72,7 @@ final class OptimizeProcessingResult implements BaseModel
     }
 
     /**
-     * Job ID for polling.
+     * Job ID for polling the result.
      */
     public function withJobID(string $jobID): self
     {
@@ -83,7 +83,7 @@ final class OptimizeProcessingResult implements BaseModel
     }
 
     /**
-     * Job status.
+     * Always `processing`.
      *
      * @param Status|value-of<Status> $status
      */

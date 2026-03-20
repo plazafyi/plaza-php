@@ -10,7 +10,7 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\Geocode\ReverseGeocodeResult\Type;
 
 /**
- * GeoJSON FeatureCollection of reverse geocoding results.
+ * GeoJSON FeatureCollection of reverse geocoding results, ordered by distance from the query point. Content-Type: `application/geo+json`.
  *
  * @phpstan-import-type GeocodingFeatureShape from \Plaza\Geocode\GeocodingFeature
  *
@@ -24,7 +24,11 @@ final class ReverseGeocodeResult implements BaseModel
     /** @use SdkModel<ReverseGeocodeResultShape> */
     use SdkModel;
 
-    /** @var list<GeocodingFeature> $features */
+    /**
+     * Reverse geocoding results ordered by distance.
+     *
+     * @var list<GeocodingFeature> $features
+     */
     #[Required(list: GeocodingFeature::class)]
     public array $features;
 
@@ -70,6 +74,8 @@ final class ReverseGeocodeResult implements BaseModel
     }
 
     /**
+     * Reverse geocoding results ordered by distance.
+     *
      * @param list<GeocodingFeature|GeocodingFeatureShape> $features
      */
     public function withFeatures(array $features): self

@@ -6,5 +6,5 @@ namespace Plaza\Optimize\OptimizeCompletedResult;
 
 enum Type: string
 {
-    case FEATURE = 'Feature';
+    case FEATURE_COLLECTION = 'FeatureCollection';
 }

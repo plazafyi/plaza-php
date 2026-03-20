@@ -36,11 +36,11 @@ final class DatasetsService implements DatasetsContract
      *
      * Create a new dataset (admin only)
      *
-     * @param string $name Dataset name
-     * @param string $slug URL-friendly slug
-     * @param string|null $attribution Attribution text
+     * @param string $name Human-readable dataset name
+     * @param string $slug URL-friendly identifier (lowercase, hyphens, no spaces)
+     * @param string|null $attribution Required attribution text
      * @param string|null $description Dataset description
-     * @param string|null $license License identifier
+     * @param string|null $license License identifier (e.g. CC-BY-4.0)
      * @param string|null $sourceURL Source data URL
      * @param RequestOpts|null $requestOptions
      *
@@ -138,6 +138,14 @@ final class DatasetsService implements DatasetsContract
      * @param string $id Dataset ID
      * @param string $cursor Cursor for pagination
      * @param int $limit Maximum results
+     * @param float $outputBuffer Buffer geometry by meters
+     * @param bool $outputCentroid Replace geometry with centroid
+     * @param string $outputFields Comma-separated property fields to include
+     * @param bool $outputGeometry Include geometry (default true)
+     * @param string $outputInclude Extra computed fields: bbox, distance, center
+     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
+     * @param float $outputSimplify Simplify geometry tolerance in meters
+     * @param string $outputSort Sort by: distance, name, osm_id
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
@@ -146,9 +154,30 @@ final class DatasetsService implements DatasetsContract
         string $id,
         ?string $cursor = null,
         ?int $limit = null,
+        ?float $outputBuffer = null,
+        ?bool $outputCentroid = null,
+        ?string $outputFields = null,
+        ?bool $outputGeometry = null,
+        ?string $outputInclude = null,
+        ?int $outputPrecision = null,
+        ?float $outputSimplify = null,
+        ?string $outputSort = null,
         RequestOptions|array|null $requestOptions = null,
     ): FeatureCollection {
-        $params = Util::removeNulls(['cursor' => $cursor, 'limit' => $limit]);
+        $params = Util::removeNulls(
+            [
+                'cursor' => $cursor,
+                'limit' => $limit,
+                'outputBuffer' => $outputBuffer,
+                'outputCentroid' => $outputCentroid,
+                'outputFields' => $outputFields,
+                'outputGeometry' => $outputGeometry,
+                'outputInclude' => $outputInclude,
+                'outputPrecision' => $outputPrecision,
+                'outputSimplify' => $outputSimplify,
+                'outputSort' => $outputSort,
+            ],
+        );
 
         // @phpstan-ignore-next-line argument.type
         $response = $this->raw->features($id, params: $params, requestOptions: $requestOptions);

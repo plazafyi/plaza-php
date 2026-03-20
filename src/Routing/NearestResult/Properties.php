@@ -9,7 +9,16 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
- * @phpstan-type PropertiesShape = array{distanceM?: float|null, edgeID?: int|null}
+ * Snap result metadata.
+ *
+ * @phpstan-type PropertiesShape = array{
+ *   distanceM?: float|null,
+ *   edgeID?: int|null,
+ *   edgeLengthM?: float|null,
+ *   highway?: string|null,
+ *   osmWayID?: int|null,
+ *   surface?: string|null,
+ * }
  */
 final class Properties implements BaseModel
 {
@@ -17,16 +26,40 @@ final class Properties implements BaseModel
     use SdkModel;
 
     /**
-     * Distance to nearest road in meters.
+     * Distance from the input coordinate to the snapped point in meters.
      */
     #[Optional('distance_m')]
     public ?float $distanceM;
 
     /**
-     * Road edge ID.
+     * ID of the road network edge that was snapped to.
      */
-    #[Optional('edge_id', nullable: true)]
+    #[Optional('edge_id')]
     public ?int $edgeID;
+
+    /**
+     * Length of the matched road edge in meters.
+     */
+    #[Optional('edge_length_m')]
+    public ?float $edgeLengthM;
+
+    /**
+     * OSM highway tag value (e.g. `residential`, `primary`, `motorway`).
+     */
+    #[Optional(nullable: true)]
+    public ?string $highway;
+
+    /**
+     * OSM way ID of the matched road segment.
+     */
+    #[Optional('osm_way_id')]
+    public ?int $osmWayID;
+
+    /**
+     * OSM surface tag value (e.g. `asphalt`, `gravel`, `paved`).
+     */
+    #[Optional(nullable: true)]
+    public ?string $surface;
 
     public function __construct()
     {
@@ -40,18 +73,26 @@ final class Properties implements BaseModel
      */
     public static function with(
         ?float $distanceM = null,
-        ?int $edgeID = null
+        ?int $edgeID = null,
+        ?float $edgeLengthM = null,
+        ?string $highway = null,
+        ?int $osmWayID = null,
+        ?string $surface = null,
     ): self {
         $self = new self;
 
         null !== $distanceM && $self['distanceM'] = $distanceM;
         null !== $edgeID && $self['edgeID'] = $edgeID;
+        null !== $edgeLengthM && $self['edgeLengthM'] = $edgeLengthM;
+        null !== $highway && $self['highway'] = $highway;
+        null !== $osmWayID && $self['osmWayID'] = $osmWayID;
+        null !== $surface && $self['surface'] = $surface;
 
         return $self;
     }
 
     /**
-     * Distance to nearest road in meters.
+     * Distance from the input coordinate to the snapped point in meters.
      */
     public function withDistanceM(float $distanceM): self
     {
@@ -62,12 +103,56 @@ final class Properties implements BaseModel
     }
 
     /**
-     * Road edge ID.
+     * ID of the road network edge that was snapped to.
      */
-    public function withEdgeID(?int $edgeID): self
+    public function withEdgeID(int $edgeID): self
     {
         $self = clone $this;
         $self['edgeID'] = $edgeID;
+
+        return $self;
+    }
+
+    /**
+     * Length of the matched road edge in meters.
+     */
+    public function withEdgeLengthM(float $edgeLengthM): self
+    {
+        $self = clone $this;
+        $self['edgeLengthM'] = $edgeLengthM;
+
+        return $self;
+    }
+
+    /**
+     * OSM highway tag value (e.g. `residential`, `primary`, `motorway`).
+     */
+    public function withHighway(?string $highway): self
+    {
+        $self = clone $this;
+        $self['highway'] = $highway;
+
+        return $self;
+    }
+
+    /**
+     * OSM way ID of the matched road segment.
+     */
+    public function withOsmWayID(int $osmWayID): self
+    {
+        $self = clone $this;
+        $self['osmWayID'] = $osmWayID;
+
+        return $self;
+    }
+
+    /**
+     * OSM surface tag value (e.g. `asphalt`, `gravel`, `paved`).
+     */
+    public function withSurface(?string $surface): self
+    {
+        $self = clone $this;
+        $self['surface'] = $surface;
 
         return $self;
     }

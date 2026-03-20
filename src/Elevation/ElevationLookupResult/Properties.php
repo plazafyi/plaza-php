@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Plaza\Elevation\ElevationLookupResult;
 
-use Plaza\Core\Attributes\Optional;
+use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
- * @phpstan-type PropertiesShape = array{elevationM?: float|null}
+ * @phpstan-type PropertiesShape = array{elevationM: float}
  */
 final class Properties implements BaseModel
 {
@@ -17,11 +17,25 @@ final class Properties implements BaseModel
     use SdkModel;
 
     /**
-     * Elevation in meters above mean sea level.
+     * Elevation in meters above mean sea level (WGS84 EGM96 geoid).
      */
-    #[Optional('elevation_m')]
-    public ?float $elevationM;
+    #[Required('elevation_m')]
+    public float $elevationM;
 
+    /**
+     * `new Properties()` is missing required properties by the API.
+     *
+     * To enforce required parameters use
+     * ```
+     * Properties::with(elevationM: ...)
+     * ```
+     *
+     * Otherwise ensure the following setters are called
+     *
+     * ```
+     * (new Properties)->withElevationM(...)
+     * ```
+     */
     public function __construct()
     {
         $this->initialize();
@@ -32,17 +46,17 @@ final class Properties implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      */
-    public static function with(?float $elevationM = null): self
+    public static function with(float $elevationM): self
     {
         $self = new self;
 
-        null !== $elevationM && $self['elevationM'] = $elevationM;
+        $self['elevationM'] = $elevationM;
 
         return $self;
     }
 
     /**
-     * Elevation in meters above mean sea level.
+     * Elevation in meters above mean sea level (WGS84 EGM96 geoid).
      */
     public function withElevationM(float $elevationM): self
     {

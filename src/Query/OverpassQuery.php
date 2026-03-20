@@ -9,6 +9,8 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
+ * Overpass QL query request. The query is executed against Plaza's OSM database and results are returned as GeoJSON.
+ *
  * @phpstan-type OverpassQueryShape = array{data: string}
  */
 final class OverpassQuery implements BaseModel

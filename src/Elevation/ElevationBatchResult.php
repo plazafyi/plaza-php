@@ -10,7 +10,7 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\Elevation\ElevationBatchResult\Type;
 
 /**
- * GeoJSON FeatureCollection of elevation Point Features with 3D coordinates.
+ * GeoJSON FeatureCollection of elevation Point Features with 3D coordinates. Order matches the input coordinates array.
  *
  * @phpstan-import-type ElevationLookupResultShape from \Plaza\Elevation\ElevationLookupResult
  *
@@ -25,7 +25,7 @@ final class ElevationBatchResult implements BaseModel
     use SdkModel;
 
     /**
-     * Elevation Point Features for each queried point.
+     * Elevation results in the same order as input coordinates.
      *
      * @var list<ElevationLookupResult> $features
      */
@@ -74,7 +74,7 @@ final class ElevationBatchResult implements BaseModel
     }
 
     /**
-     * Elevation Point Features for each queried point.
+     * Elevation results in the same order as input coordinates.
      *
      * @param list<ElevationLookupResult|ElevationLookupResultShape> $features
      */

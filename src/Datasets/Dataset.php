@@ -10,6 +10,8 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
+ * Metadata for a custom dataset. Datasets contain user-uploaded geospatial features separate from the OSM data.
+ *
  * @phpstan-type DatasetShape = array{
  *   id: string,
  *   insertedAt: \DateTimeInterface,
@@ -28,37 +30,37 @@ final class Dataset implements BaseModel
     use SdkModel;
 
     /**
-     * Dataset ID.
+     * Dataset UUID.
      */
     #[Required]
     public string $id;
 
     /**
-     * Creation timestamp.
+     * Creation timestamp (UTC).
      */
     #[Required('inserted_at')]
     public \DateTimeInterface $insertedAt;
 
     /**
-     * Dataset name.
+     * Human-readable dataset name.
      */
     #[Required]
     public string $name;
 
     /**
-     * URL-friendly slug.
+     * URL-friendly identifier.
      */
     #[Required]
     public string $slug;
 
     /**
-     * Last update timestamp.
+     * Last update timestamp (UTC).
      */
     #[Required('updated_at')]
     public \DateTimeInterface $updatedAt;
 
     /**
-     * Attribution text.
+     * Required attribution text.
      */
     #[Optional(nullable: true)]
     public ?string $attribution;
@@ -70,13 +72,13 @@ final class Dataset implements BaseModel
     public ?string $description;
 
     /**
-     * License identifier.
+     * License identifier (e.g. CC-BY-4.0).
      */
     #[Optional(nullable: true)]
     public ?string $license;
 
     /**
-     * Source data URL.
+     * URL of the original data source.
      */
     #[Optional('source_url', nullable: true)]
     public ?string $sourceURL;
@@ -138,7 +140,7 @@ final class Dataset implements BaseModel
     }
 
     /**
-     * Dataset ID.
+     * Dataset UUID.
      */
     public function withID(string $id): self
     {
@@ -149,7 +151,7 @@ final class Dataset implements BaseModel
     }
 
     /**
-     * Creation timestamp.
+     * Creation timestamp (UTC).
      */
     public function withInsertedAt(\DateTimeInterface $insertedAt): self
     {
@@ -160,7 +162,7 @@ final class Dataset implements BaseModel
     }
 
     /**
-     * Dataset name.
+     * Human-readable dataset name.
      */
     public function withName(string $name): self
     {
@@ -171,7 +173,7 @@ final class Dataset implements BaseModel
     }
 
     /**
-     * URL-friendly slug.
+     * URL-friendly identifier.
      */
     public function withSlug(string $slug): self
     {
@@ -182,7 +184,7 @@ final class Dataset implements BaseModel
     }
 
     /**
-     * Last update timestamp.
+     * Last update timestamp (UTC).
      */
     public function withUpdatedAt(\DateTimeInterface $updatedAt): self
     {
@@ -193,7 +195,7 @@ final class Dataset implements BaseModel
     }
 
     /**
-     * Attribution text.
+     * Required attribution text.
      */
     public function withAttribution(?string $attribution): self
     {
@@ -215,7 +217,7 @@ final class Dataset implements BaseModel
     }
 
     /**
-     * License identifier.
+     * License identifier (e.g. CC-BY-4.0).
      */
     public function withLicense(?string $license): self
     {
@@ -226,7 +228,7 @@ final class Dataset implements BaseModel
     }
 
     /**
-     * Source data URL.
+     * URL of the original data source.
      */
     public function withSourceURL(?string $sourceURL): self
     {

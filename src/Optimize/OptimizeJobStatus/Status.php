@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Plaza\Optimize\OptimizeJobStatus;
 
 /**
- * Job status.
+ * Current job state.
  */
 enum Status: string
 {
     case COMPLETED = 'completed';
 
     case PROCESSING = 'processing';
-
-    case FAILED = 'failed';
 }

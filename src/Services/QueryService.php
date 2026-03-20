@@ -8,11 +8,14 @@ use Plaza\Client;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\Core\Util;
 use Plaza\PlazaClientService\FeatureCollection;
+use Plaza\Query\QueryExecuteParams\Step;
+use Plaza\Query\QueryExecuteResponse;
 use Plaza\Query\SparqlResult;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\QueryContract;
 
 /**
+ * @phpstan-import-type StepShape from \Plaza\Query\QueryExecuteParams\Step
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 final class QueryService implements QueryContract
@@ -28,6 +31,28 @@ final class QueryService implements QueryContract
     public function __construct(private Client $client)
     {
         $this->raw = new QueryRawService($client);
+    }
+
+    /**
+     * @api
+     *
+     * Execute a multi-step query pipeline
+     *
+     * @param list<Step|StepShape> $steps Ordered list of query steps to execute
+     * @param RequestOpts|null $requestOptions
+     *
+     * @throws APIException
+     */
+    public function execute(
+        array $steps,
+        RequestOptions|array|null $requestOptions = null
+    ): QueryExecuteResponse {
+        $params = Util::removeNulls(['steps' => $steps]);
+
+        // @phpstan-ignore-next-line argument.type
+        $response = $this->raw->execute(params: $params, requestOptions: $requestOptions);
+
+        return $response->parse();
     }
 
     /**

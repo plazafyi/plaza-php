@@ -8,15 +8,15 @@ use Plaza\Core\Attributes\Optional;
 use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\PlazaClientService\GeoJsonGeometry;
+use Plaza\MapMatch\MapMatchRequest\Coordinate;
 
 /**
- * GPS trace to match against the road network.
+ * GPS trace to snap to the road network. Provide an array of coordinate objects representing the GPS points. Maximum 50 points per request.
  *
- * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
+ * @phpstan-import-type CoordinateShape from \Plaza\MapMatch\MapMatchRequest\Coordinate
  *
  * @phpstan-type MapMatchRequestShape = array{
- *   trace: GeoJsonGeometry|GeoJsonGeometryShape, radiuses?: list<float>|null
+ *   coordinates: list<Coordinate|CoordinateShape>, radiuses?: list<float>|null
  * }
  */
 final class MapMatchRequest implements BaseModel
@@ -25,13 +25,15 @@ final class MapMatchRequest implements BaseModel
     use SdkModel;
 
     /**
-     * GPS trace (GeoJSON LineString geometry).
+     * GPS coordinates to match, in order of travel (max 50 points).
+     *
+     * @var list<Coordinate> $coordinates
      */
-    #[Required]
-    public GeoJsonGeometry $trace;
+    #[Required(list: Coordinate::class)]
+    public array $coordinates;
 
     /**
-     * Search radius per coordinate in meters (optional, default 50).
+     * Search radius per coordinate in meters. Must have the same length as `coordinates` or be omitted entirely. Default: 50m per point.
      *
      * @var list<float>|null $radiuses
      */
@@ -43,13 +45,13 @@ final class MapMatchRequest implements BaseModel
      *
      * To enforce required parameters use
      * ```
-     * MapMatchRequest::with(trace: ...)
+     * MapMatchRequest::with(coordinates: ...)
      * ```
      *
      * Otherwise ensure the following setters are called
      *
      * ```
-     * (new MapMatchRequest)->withTrace(...)
+     * (new MapMatchRequest)->withCoordinates(...)
      * ```
      */
     public function __construct()
@@ -62,16 +64,16 @@ final class MapMatchRequest implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $trace
+     * @param list<Coordinate|CoordinateShape> $coordinates
      * @param list<float>|null $radiuses
      */
     public static function with(
-        GeoJsonGeometry|array $trace,
+        array $coordinates,
         ?array $radiuses = null
     ): self {
         $self = new self;
 
-        $self['trace'] = $trace;
+        $self['coordinates'] = $coordinates;
 
         null !== $radiuses && $self['radiuses'] = $radiuses;
 
@@ -79,20 +81,20 @@ final class MapMatchRequest implements BaseModel
     }
 
     /**
-     * GPS trace (GeoJSON LineString geometry).
+     * GPS coordinates to match, in order of travel (max 50 points).
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $trace
+     * @param list<Coordinate|CoordinateShape> $coordinates
      */
-    public function withTrace(GeoJsonGeometry|array $trace): self
+    public function withCoordinates(array $coordinates): self
     {
         $self = clone $this;
-        $self['trace'] = $trace;
+        $self['coordinates'] = $coordinates;
 
         return $self;
     }
 
     /**
-     * Search radius per coordinate in meters (optional, default 50).
+     * Search radius per coordinate in meters. Must have the same length as `coordinates` or be omitted entirely. Default: 50m per point.
      *
      * @param list<float>|null $radiuses
      */

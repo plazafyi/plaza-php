@@ -50,7 +50,9 @@ final class ElementsTest extends TestCase
     public function testBatch(): void
     {
         $result = $this->client->elements->batch(
-            elements: [['id' => 0, 'type' => 'node']]
+            elements: [
+                ['id' => 21154906, 'type' => 'node'], ['id' => 4589123, 'type' => 'way'],
+            ],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -61,31 +63,37 @@ final class ElementsTest extends TestCase
     public function testBatchWithOptionalParams(): void
     {
         $result = $this->client->elements->batch(
-            elements: [['id' => 0, 'type' => 'node']]
+            elements: [
+                ['id' => 21154906, 'type' => 'node'], ['id' => 4589123, 'type' => 'way'],
+            ],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(FeatureCollection::class, $result);
+    }
+
+    #[Test]
+    public function testLookup(): void
+    {
+        $result = $this->client->elements->lookup();
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(GeoJsonFeature::class, $result);
     }
 
     #[Test]
     public function testNearby(): void
     {
-        $result = $this->client->elements->nearby(lat: 0, lng: 0);
+        $result = $this->client->elements->nearby();
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(FeatureCollection::class, $result);
     }
 
     #[Test]
-    public function testNearbyWithOptionalParams(): void
+    public function testNearbyPost(): void
     {
-        $result = $this->client->elements->nearby(
-            lat: 0,
-            lng: 0,
-            limit: 0,
-            radius: 0
-        );
+        $result = $this->client->elements->nearbyPost();
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(FeatureCollection::class, $result);
@@ -95,6 +103,15 @@ final class ElementsTest extends TestCase
     public function testQuery(): void
     {
         $result = $this->client->elements->query();
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(FeatureCollection::class, $result);
+    }
+
+    #[Test]
+    public function testQueryPost(): void
+    {
+        $result = $this->client->elements->queryPost();
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(FeatureCollection::class, $result);

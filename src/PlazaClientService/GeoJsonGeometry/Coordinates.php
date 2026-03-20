@@ -10,7 +10,7 @@ use Plaza\Core\Conversion\Contracts\ConverterSource;
 use Plaza\Core\Conversion\ListOf;
 
 /**
- * GeoJSON coordinates array (nesting depth varies by geometry type).
+ * Coordinates array. Nesting depth varies by geometry type: Point = [lng, lat], LineString = [[lng, lat], ...], Polygon = [[[lng, lat], ...], ...], etc.
  *
  * @phpstan-type CoordinatesVariants = list<float>|list<list<float>>|list<list<list<float>>>|list<list<list<list<float>>>>
  * @phpstan-type CoordinatesShape = CoordinatesVariants

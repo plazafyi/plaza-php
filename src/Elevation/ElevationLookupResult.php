@@ -12,7 +12,7 @@ use Plaza\Elevation\ElevationLookupResult\Type;
 use Plaza\PlazaClientService\GeoJsonGeometry;
 
 /**
- * GeoJSON Point Feature with 3D coordinate [lng, lat, elevation] (RFC 7946 §3.1.1).
+ * GeoJSON Point Feature with a 3D coordinate [lng, lat, elevation] per RFC 7946 §3.1.1. The elevation is also available in `properties.elevation_m` for convenience.
  *
  * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
  * @phpstan-import-type PropertiesShape from \Plaza\Elevation\ElevationLookupResult\Properties
@@ -28,6 +28,9 @@ final class ElevationLookupResult implements BaseModel
     /** @use SdkModel<ElevationLookupResultShape> */
     use SdkModel;
 
+    /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     */
     #[Required]
     public GeoJsonGeometry $geometry;
 
@@ -84,6 +87,8 @@ final class ElevationLookupResult implements BaseModel
     }
 
     /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     *
      * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
      */
     public function withGeometry(GeoJsonGeometry|array $geometry): self

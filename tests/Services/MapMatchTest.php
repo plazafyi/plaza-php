@@ -31,7 +31,11 @@ final class MapMatchTest extends TestCase
     public function testMatch(): void
     {
         $result = $this->client->mapMatch->match(
-            trace: ['coordinates' => [0], 'type' => 'Point']
+            coordinates: [
+                ['lat' => 48.8566, 'lng' => 2.3522],
+                ['lat' => 48.857, 'lng' => 2.353],
+                ['lat' => 48.8575, 'lng' => 2.354],
+            ],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -42,8 +46,12 @@ final class MapMatchTest extends TestCase
     public function testMatchWithOptionalParams(): void
     {
         $result = $this->client->mapMatch->match(
-            trace: ['coordinates' => [0], 'type' => 'Point'],
-            radiuses: [0]
+            coordinates: [
+                ['lat' => 48.8566, 'lng' => 2.3522],
+                ['lat' => 48.857, 'lng' => 2.353],
+                ['lat' => 48.8575, 'lng' => 2.354],
+            ],
+            radiuses: [0],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType

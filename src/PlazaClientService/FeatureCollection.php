@@ -10,7 +10,17 @@ use Plaza\Core\Contracts\BaseModel;
 use Plaza\PlazaClientService\FeatureCollection\Type;
 
 /**
- * Bare GeoJSON FeatureCollection. Pagination metadata is returned in HTTP headers (X-Limit, X-Has-More, X-Next-Cursor, X-Next-Offset, Link).
+ * GeoJSON FeatureCollection (RFC 7946). For paginated endpoints, metadata is returned in HTTP response headers rather than the body:
+ *
+ * | Header | Description |
+ * |---|---|
+ * | `X-Limit` | Requested result limit |
+ * | `X-Has-More` | `true` if more results exist |
+ * | `X-Next-Cursor` | Opaque cursor for next page (cursor pagination) |
+ * | `X-Next-Offset` | Numeric offset for next page (offset pagination) |
+ * | `Link` | RFC 8288 `rel="next"` link to the next page |
+ *
+ * Content-Type is `application/geo+json`.
  *
  * @phpstan-import-type GeoJsonFeatureShape from \Plaza\PlazaClientService\GeoJsonFeature
  *
@@ -23,11 +33,19 @@ final class FeatureCollection implements BaseModel
     /** @use SdkModel<FeatureCollectionShape> */
     use SdkModel;
 
-    /** @var list<GeoJsonFeature> $features */
+    /**
+     * Array of GeoJSON Feature objects.
+     *
+     * @var list<GeoJsonFeature> $features
+     */
     #[Required(list: GeoJsonFeature::class)]
     public array $features;
 
-    /** @var value-of<Type> $type */
+    /**
+     * Always `FeatureCollection`.
+     *
+     * @var value-of<Type> $type
+     */
     #[Required(enum: Type::class)]
     public string $type;
 
@@ -69,6 +87,8 @@ final class FeatureCollection implements BaseModel
     }
 
     /**
+     * Array of GeoJSON Feature objects.
+     *
      * @param list<GeoJsonFeature|GeoJsonFeatureShape> $features
      */
     public function withFeatures(array $features): self
@@ -80,6 +100,8 @@ final class FeatureCollection implements BaseModel
     }
 
     /**
+     * Always `FeatureCollection`.
+     *
      * @param Type|value-of<Type> $type
      */
     public function withType(Type|string $type): self

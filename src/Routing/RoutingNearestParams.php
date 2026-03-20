@@ -16,7 +16,12 @@ use Plaza\Core\Contracts\BaseModel;
  * @see Plaza\Services\RoutingService::nearest()
  *
  * @phpstan-type RoutingNearestParamsShape = array{
- *   lat: float, lng: float, radius?: int|null
+ *   lat: float,
+ *   lng: float,
+ *   outputFields?: string|null,
+ *   outputInclude?: string|null,
+ *   outputPrecision?: int|null,
+ *   radius?: int|null,
  * }
  */
 final class RoutingNearestParams implements BaseModel
@@ -36,6 +41,24 @@ final class RoutingNearestParams implements BaseModel
      */
     #[Required]
     public float $lng;
+
+    /**
+     * Comma-separated property fields to include.
+     */
+    #[Optional]
+    public ?string $outputFields;
+
+    /**
+     * Extra computed fields: bbox, distance, center.
+     */
+    #[Optional]
+    public ?string $outputInclude;
+
+    /**
+     * Coordinate decimal precision (1-15, default 7).
+     */
+    #[Optional]
+    public ?int $outputPrecision;
 
     /**
      * Search radius in meters (default 500, max 5000).
@@ -70,13 +93,19 @@ final class RoutingNearestParams implements BaseModel
     public static function with(
         float $lat,
         float $lng,
-        ?int $radius = null
+        ?string $outputFields = null,
+        ?string $outputInclude = null,
+        ?int $outputPrecision = null,
+        ?int $radius = null,
     ): self {
         $self = new self;
 
         $self['lat'] = $lat;
         $self['lng'] = $lng;
 
+        null !== $outputFields && $self['outputFields'] = $outputFields;
+        null !== $outputInclude && $self['outputInclude'] = $outputInclude;
+        null !== $outputPrecision && $self['outputPrecision'] = $outputPrecision;
         null !== $radius && $self['radius'] = $radius;
 
         return $self;
@@ -100,6 +129,39 @@ final class RoutingNearestParams implements BaseModel
     {
         $self = clone $this;
         $self['lng'] = $lng;
+
+        return $self;
+    }
+
+    /**
+     * Comma-separated property fields to include.
+     */
+    public function withOutputFields(string $outputFields): self
+    {
+        $self = clone $this;
+        $self['outputFields'] = $outputFields;
+
+        return $self;
+    }
+
+    /**
+     * Extra computed fields: bbox, distance, center.
+     */
+    public function withOutputInclude(string $outputInclude): self
+    {
+        $self = clone $this;
+        $self['outputInclude'] = $outputInclude;
+
+        return $self;
+    }
+
+    /**
+     * Coordinate decimal precision (1-15, default 7).
+     */
+    public function withOutputPrecision(int $outputPrecision): self
+    {
+        $self = clone $this;
+        $self['outputPrecision'] = $outputPrecision;
 
         return $self;
     }

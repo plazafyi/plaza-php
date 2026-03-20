@@ -12,6 +12,8 @@ use Plaza\Geocode\GeocodingFeature\Type;
 use Plaza\PlazaClientService\GeoJsonGeometry;
 
 /**
+ * GeoJSON Feature representing a geocoding result. The geometry is always a Point. Properties include the formatted display name, OSM metadata, confidence score, and source type.
+ *
  * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
  * @phpstan-import-type PropertiesShape from \Plaza\Geocode\GeocodingFeature\Properties
  *
@@ -26,9 +28,15 @@ final class GeocodingFeature implements BaseModel
     /** @use SdkModel<GeocodingFeatureShape> */
     use SdkModel;
 
+    /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     */
     #[Required]
     public GeoJsonGeometry $geometry;
 
+    /**
+     * Geocoding result properties.
+     */
     #[Required]
     public Properties $properties;
 
@@ -79,6 +87,8 @@ final class GeocodingFeature implements BaseModel
     }
 
     /**
+     * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+     *
      * @param GeoJsonGeometry|GeoJsonGeometryShape $geometry
      */
     public function withGeometry(GeoJsonGeometry|array $geometry): self
@@ -90,6 +100,8 @@ final class GeocodingFeature implements BaseModel
     }
 
     /**
+     * Geocoding result properties.
+     *
      * @param Properties|PropertiesShape $properties
      */
     public function withProperties(Properties|array $properties): self

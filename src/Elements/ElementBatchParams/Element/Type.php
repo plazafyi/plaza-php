@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Plaza\Elements\ElementBatchParams\Element;
 
+/**
+ * OSM element type.
+ */
 enum Type: string
 {
     case NODE = 'node';

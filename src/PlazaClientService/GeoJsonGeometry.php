@@ -11,6 +11,8 @@ use Plaza\PlazaClientService\GeoJsonGeometry\Coordinates;
 use Plaza\PlazaClientService\GeoJsonGeometry\Type;
 
 /**
+ * GeoJSON Geometry object per RFC 7946. Coordinates use [longitude, latitude] order. 3D coordinates [lng, lat, elevation] are used for elevation endpoints.
+ *
  * @phpstan-import-type CoordinatesVariants from \Plaza\PlazaClientService\GeoJsonGeometry\Coordinates
  * @phpstan-import-type CoordinatesShape from \Plaza\PlazaClientService\GeoJsonGeometry\Coordinates
  *
@@ -24,14 +26,18 @@ final class GeoJsonGeometry implements BaseModel
     use SdkModel;
 
     /**
-     * GeoJSON coordinates array (nesting depth varies by geometry type).
+     * Coordinates array. Nesting depth varies by geometry type: Point = [lng, lat], LineString = [[lng, lat], ...], Polygon = [[[lng, lat], ...], ...], etc.
      *
      * @var CoordinatesVariants $coordinates
      */
     #[Required(union: Coordinates::class)]
     public array $coordinates;
 
-    /** @var value-of<Type> $type */
+    /**
+     * Geometry type.
+     *
+     * @var value-of<Type> $type
+     */
     #[Required(enum: Type::class)]
     public string $type;
 
@@ -73,7 +79,7 @@ final class GeoJsonGeometry implements BaseModel
     }
 
     /**
-     * GeoJSON coordinates array (nesting depth varies by geometry type).
+     * Coordinates array. Nesting depth varies by geometry type: Point = [lng, lat], LineString = [[lng, lat], ...], Polygon = [[[lng, lat], ...], ...], etc.
      *
      * @param CoordinatesShape $coordinates
      */
@@ -86,6 +92,8 @@ final class GeoJsonGeometry implements BaseModel
     }
 
     /**
+     * Geometry type.
+     *
      * @param Type|value-of<Type> $type
      */
     public function withType(Type|string $type): self

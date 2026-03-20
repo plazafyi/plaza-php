@@ -27,7 +27,11 @@ final class ElementBatchParams implements BaseModel
     use SdkModel;
     use SdkParams;
 
-    /** @var list<Element> $elements */
+    /**
+     * Array of element references to fetch.
+     *
+     * @var list<Element> $elements
+     */
     #[Required(list: Element::class)]
     public array $elements;
 
@@ -67,6 +71,8 @@ final class ElementBatchParams implements BaseModel
     }
 
     /**
+     * Array of element references to fetch.
+     *
      * @param list<Element|ElementShape> $elements
      */
     public function withElements(array $elements): self

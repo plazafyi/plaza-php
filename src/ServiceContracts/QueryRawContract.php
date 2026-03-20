@@ -7,6 +7,8 @@ namespace Plaza\ServiceContracts;
 use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\PlazaClientService\FeatureCollection;
+use Plaza\Query\QueryExecuteParams;
+use Plaza\Query\QueryExecuteResponse;
 use Plaza\Query\QueryOverpassParams;
 use Plaza\Query\QuerySparqlParams;
 use Plaza\Query\SparqlResult;
@@ -17,6 +19,21 @@ use Plaza\RequestOptions;
  */
 interface QueryRawContract
 {
+    /**
+     * @api
+     *
+     * @param array<string,mixed>|QueryExecuteParams $params
+     * @param RequestOpts|null $requestOptions
+     *
+     * @return BaseResponse<QueryExecuteResponse>
+     *
+     * @throws APIException
+     */
+    public function execute(
+        array|QueryExecuteParams $params,
+        RequestOptions|array|null $requestOptions = null,
+    ): BaseResponse;
+
     /**
      * @api
      *

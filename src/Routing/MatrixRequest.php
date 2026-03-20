@@ -8,15 +8,21 @@ use Plaza\Core\Attributes\Optional;
 use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\PlazaClientService\GeoJsonGeometry;
+use Plaza\Routing\MatrixRequest\Destination;
 use Plaza\Routing\MatrixRequest\Mode;
+use Plaza\Routing\MatrixRequest\Origin;
 
 /**
- * @phpstan-import-type GeoJsonGeometryShape from \Plaza\PlazaClientService\GeoJsonGeometry
+ * Request body for distance matrix calculation. Computes travel durations (and optionally distances) between every origin-destination pair. Maximum 2,500 pairs (origins × destinations), each list capped at 50 coordinates.
+ *
+ * @phpstan-import-type DestinationShape from \Plaza\Routing\MatrixRequest\Destination
+ * @phpstan-import-type OriginShape from \Plaza\Routing\MatrixRequest\Origin
  *
  * @phpstan-type MatrixRequestShape = array{
- *   destinations: GeoJsonGeometry|GeoJsonGeometryShape,
- *   origins: GeoJsonGeometry|GeoJsonGeometryShape,
+ *   destinations: list<Destination|DestinationShape>,
+ *   origins: list<Origin|OriginShape>,
+ *   annotations?: string|null,
+ *   fallbackSpeed?: float|null,
  *   mode?: null|Mode|value-of<Mode>,
  * }
  */
@@ -26,19 +32,35 @@ final class MatrixRequest implements BaseModel
     use SdkModel;
 
     /**
-     * Destination points (GeoJSON MultiPoint geometry).
+     * Array of destination coordinates (max 50).
+     *
+     * @var list<Destination> $destinations
      */
-    #[Required]
-    public GeoJsonGeometry $destinations;
+    #[Required(list: Destination::class)]
+    public array $destinations;
 
     /**
-     * Origin points (GeoJSON MultiPoint geometry).
+     * Array of origin coordinates (max 50).
+     *
+     * @var list<Origin> $origins
      */
-    #[Required]
-    public GeoJsonGeometry $origins;
+    #[Required(list: Origin::class)]
+    public array $origins;
 
     /**
-     * Travel mode.
+     * Comma-separated list of annotations to include: `duration` (always included), `distance`. Example: `duration,distance`.
+     */
+    #[Optional]
+    public ?string $annotations;
+
+    /**
+     * Fallback speed in km/h for pairs where no route exists. When set, unreachable pairs get estimated values instead of null.
+     */
+    #[Optional('fallback_speed', nullable: true)]
+    public ?float $fallbackSpeed;
+
+    /**
+     * Travel mode (default: `auto`).
      *
      * @var value-of<Mode>|null $mode
      */
@@ -69,13 +91,15 @@ final class MatrixRequest implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $destinations
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $origins
+     * @param list<Destination|DestinationShape> $destinations
+     * @param list<Origin|OriginShape> $origins
      * @param Mode|value-of<Mode>|null $mode
      */
     public static function with(
-        GeoJsonGeometry|array $destinations,
-        GeoJsonGeometry|array $origins,
+        array $destinations,
+        array $origins,
+        ?string $annotations = null,
+        ?float $fallbackSpeed = null,
         Mode|string|null $mode = null,
     ): self {
         $self = new self;
@@ -83,17 +107,19 @@ final class MatrixRequest implements BaseModel
         $self['destinations'] = $destinations;
         $self['origins'] = $origins;
 
+        null !== $annotations && $self['annotations'] = $annotations;
+        null !== $fallbackSpeed && $self['fallbackSpeed'] = $fallbackSpeed;
         null !== $mode && $self['mode'] = $mode;
 
         return $self;
     }
 
     /**
-     * Destination points (GeoJSON MultiPoint geometry).
+     * Array of destination coordinates (max 50).
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $destinations
+     * @param list<Destination|DestinationShape> $destinations
      */
-    public function withDestinations(GeoJsonGeometry|array $destinations): self
+    public function withDestinations(array $destinations): self
     {
         $self = clone $this;
         $self['destinations'] = $destinations;
@@ -102,11 +128,11 @@ final class MatrixRequest implements BaseModel
     }
 
     /**
-     * Origin points (GeoJSON MultiPoint geometry).
+     * Array of origin coordinates (max 50).
      *
-     * @param GeoJsonGeometry|GeoJsonGeometryShape $origins
+     * @param list<Origin|OriginShape> $origins
      */
-    public function withOrigins(GeoJsonGeometry|array $origins): self
+    public function withOrigins(array $origins): self
     {
         $self = clone $this;
         $self['origins'] = $origins;
@@ -115,7 +141,29 @@ final class MatrixRequest implements BaseModel
     }
 
     /**
-     * Travel mode.
+     * Comma-separated list of annotations to include: `duration` (always included), `distance`. Example: `duration,distance`.
+     */
+    public function withAnnotations(string $annotations): self
+    {
+        $self = clone $this;
+        $self['annotations'] = $annotations;
+
+        return $self;
+    }
+
+    /**
+     * Fallback speed in km/h for pairs where no route exists. When set, unreachable pairs get estimated values instead of null.
+     */
+    public function withFallbackSpeed(?float $fallbackSpeed): self
+    {
+        $self = clone $this;
+        $self['fallbackSpeed'] = $fallbackSpeed;
+
+        return $self;
+    }
+
+    /**
+     * Travel mode (default: `auto`).
      *
      * @param Mode|value-of<Mode> $mode
      */

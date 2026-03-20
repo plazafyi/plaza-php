@@ -8,7 +8,9 @@ use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\Elements\ElementBatchParams;
 use Plaza\Elements\ElementNearbyParams;
+use Plaza\Elements\ElementNearbyPostParams;
 use Plaza\Elements\ElementQueryParams;
+use Plaza\Elements\ElementQueryPostParams;
 use Plaza\Elements\ElementRetrieveParams;
 use Plaza\PlazaClientService\FeatureCollection;
 use Plaza\PlazaClientService\GeoJsonFeature;
@@ -54,6 +56,19 @@ interface ElementsRawContract
     /**
      * @api
      *
+     * @param RequestOpts|null $requestOptions
+     *
+     * @return BaseResponse<GeoJsonFeature>
+     *
+     * @throws APIException
+     */
+    public function lookup(
+        RequestOptions|array|null $requestOptions = null
+    ): BaseResponse;
+
+    /**
+     * @api
+     *
      * @param array<string,mixed>|ElementNearbyParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -69,6 +84,21 @@ interface ElementsRawContract
     /**
      * @api
      *
+     * @param array<string,mixed>|ElementNearbyPostParams $params
+     * @param RequestOpts|null $requestOptions
+     *
+     * @return BaseResponse<FeatureCollection>
+     *
+     * @throws APIException
+     */
+    public function nearbyPost(
+        array|ElementNearbyPostParams $params,
+        RequestOptions|array|null $requestOptions = null,
+    ): BaseResponse;
+
+    /**
+     * @api
+     *
      * @param array<string,mixed>|ElementQueryParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -78,6 +108,21 @@ interface ElementsRawContract
      */
     public function query(
         array|ElementQueryParams $params,
+        RequestOptions|array|null $requestOptions = null,
+    ): BaseResponse;
+
+    /**
+     * @api
+     *
+     * @param array<string,mixed>|ElementQueryPostParams $params
+     * @param RequestOpts|null $requestOptions
+     *
+     * @return BaseResponse<FeatureCollection>
+     *
+     * @throws APIException
+     */
+    public function queryPost(
+        array|ElementQueryPostParams $params,
         RequestOptions|array|null $requestOptions = null,
     ): BaseResponse;
 }

@@ -33,7 +33,9 @@ final class ElevationTest extends TestCase
     public function testBatch(): void
     {
         $result = $this->client->elevation->batch(
-            geometry: ['coordinates' => [0], 'type' => 'Point']
+            coordinates: [
+                ['lat' => 48.8566, 'lng' => 2.3522], ['lat' => 45.764, 'lng' => 4.8357],
+            ],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -44,7 +46,9 @@ final class ElevationTest extends TestCase
     public function testBatchWithOptionalParams(): void
     {
         $result = $this->client->elevation->batch(
-            geometry: ['coordinates' => [0], 'type' => 'Point']
+            coordinates: [
+                ['lat' => 48.8566, 'lng' => 2.3522], ['lat' => 45.764, 'lng' => 4.8357],
+            ],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -61,10 +65,23 @@ final class ElevationTest extends TestCase
     }
 
     #[Test]
+    public function testLookupPost(): void
+    {
+        $result = $this->client->elevation->lookupPost();
+
+        // @phpstan-ignore-next-line method.alreadyNarrowedType
+        $this->assertInstanceOf(ElevationLookupResult::class, $result);
+    }
+
+    #[Test]
     public function testProfile(): void
     {
         $result = $this->client->elevation->profile(
-            geometry: ['coordinates' => [0], 'type' => 'Point']
+            coordinates: [
+                ['lat' => 48.8566, 'lng' => 2.3522],
+                ['lat' => 48.858, 'lng' => 2.34],
+                ['lat' => 48.8584, 'lng' => 2.2945],
+            ],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -75,7 +92,11 @@ final class ElevationTest extends TestCase
     public function testProfileWithOptionalParams(): void
     {
         $result = $this->client->elevation->profile(
-            geometry: ['coordinates' => [0], 'type' => 'Point']
+            coordinates: [
+                ['lat' => 48.8566, 'lng' => 2.3522],
+                ['lat' => 48.858, 'lng' => 2.34],
+                ['lat' => 48.8584, 'lng' => 2.2945],
+            ],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
