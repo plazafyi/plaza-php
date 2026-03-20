@@ -21,19 +21,22 @@ interface ElevationContract
     /**
      * @api
      *
-     * @param list<Coordinate|CoordinateShape> $coordinates Coordinates to look up elevations for (max 50)
+     * @param list<Coordinate|CoordinateShape> $coordinates Body param: Coordinates to look up elevations for (max 50)
+     * @param string $format Query param: Response format: json (default), geojson, csv, ndjson
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function batch(
         array $coordinates,
-        RequestOptions|array|null $requestOptions = null
+        ?string $format = null,
+        RequestOptions|array|null $requestOptions = null,
     ): ElevationBatchResult;
 
     /**
      * @api
      *
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param float $lat Latitude (single point)
      * @param float $lng Longitude (single point)
      * @param string $locations Pipe-separated lng,lat pairs (batch)
@@ -45,6 +48,7 @@ interface ElevationContract
      * @throws APIException
      */
     public function lookup(
+        ?string $format = null,
         ?float $lat = null,
         ?float $lng = null,
         ?string $locations = null,
@@ -57,6 +61,7 @@ interface ElevationContract
     /**
      * @api
      *
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param float $lat Latitude (single point)
      * @param float $lng Longitude (single point)
      * @param string $locations Pipe-separated lng,lat pairs (batch)
@@ -68,6 +73,7 @@ interface ElevationContract
      * @throws APIException
      */
     public function lookupPost(
+        ?string $format = null,
         ?float $lat = null,
         ?float $lng = null,
         ?string $locations = null,

@@ -21,6 +21,7 @@ use Plaza\Optimize\OptimizeCreateParams\Waypoint;
  *
  * @phpstan-type OptimizeCreateParamsShape = array{
  *   waypoints: list<Waypoint|WaypointShape>,
+ *   format?: string|null,
  *   mode?: null|Mode|value-of<Mode>,
  *   roundtrip?: bool|null,
  * }
@@ -38,6 +39,12 @@ final class OptimizeCreateParams implements BaseModel
      */
     #[Required(list: Waypoint::class)]
     public array $waypoints;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Travel mode (default: `auto`).
@@ -82,13 +89,15 @@ final class OptimizeCreateParams implements BaseModel
      */
     public static function with(
         array $waypoints,
+        ?string $format = null,
         Mode|string|null $mode = null,
-        ?bool $roundtrip = null
+        ?bool $roundtrip = null,
     ): self {
         $self = new self;
 
         $self['waypoints'] = $waypoints;
 
+        null !== $format && $self['format'] = $format;
         null !== $mode && $self['mode'] = $mode;
         null !== $roundtrip && $self['roundtrip'] = $roundtrip;
 
@@ -104,6 +113,17 @@ final class OptimizeCreateParams implements BaseModel
     {
         $self = clone $this;
         $self['waypoints'] = $waypoints;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

@@ -146,6 +146,7 @@ final class DatasetsRawService implements DatasetsRawContract
      * @param string $id Dataset ID
      * @param array{
      *   cursor?: string,
+     *   format?: string,
      *   limit?: int,
      *   outputBuffer?: float,
      *   outputCentroid?: bool,

@@ -15,6 +15,7 @@ use Plaza\Core\Contracts\BaseModel;
  * @see Plaza\Services\GeocodeService::reversePost()
  *
  * @phpstan-type GeocodeReversePostParamsShape = array{
+ *   format?: string|null,
  *   lang?: string|null,
  *   lat?: float|null,
  *   layer?: string|null,
@@ -29,6 +30,12 @@ final class GeocodeReversePostParams implements BaseModel
     /** @use SdkModel<GeocodeReversePostParamsShape> */
     use SdkModel;
     use SdkParams;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Language code for localized names (e.g. en, de, fr).
@@ -83,6 +90,7 @@ final class GeocodeReversePostParams implements BaseModel
      * You must use named parameters to construct any parameters with a default value.
      */
     public static function with(
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -93,6 +101,7 @@ final class GeocodeReversePostParams implements BaseModel
     ): self {
         $self = new self;
 
+        null !== $format && $self['format'] = $format;
         null !== $lang && $self['lang'] = $lang;
         null !== $lat && $self['lat'] = $lat;
         null !== $layer && $self['layer'] = $layer;
@@ -100,6 +109,17 @@ final class GeocodeReversePostParams implements BaseModel
         null !== $lng && $self['lng'] = $lng;
         null !== $near && $self['near'] = $near;
         null !== $radius && $self['radius'] = $radius;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

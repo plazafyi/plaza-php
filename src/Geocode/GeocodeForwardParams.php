@@ -19,6 +19,7 @@ use Plaza\Core\Contracts\BaseModel;
  *   q: string,
  *   bbox?: string|null,
  *   countryCode?: string|null,
+ *   format?: string|null,
  *   lang?: string|null,
  *   lat?: float|null,
  *   layer?: string|null,
@@ -49,6 +50,12 @@ final class GeocodeForwardParams implements BaseModel
      */
     #[Optional]
     public ?string $countryCode;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Language code for localized names (e.g. en, de, fr).
@@ -108,6 +115,7 @@ final class GeocodeForwardParams implements BaseModel
         string $q,
         ?string $bbox = null,
         ?string $countryCode = null,
+        ?string $format = null,
         ?string $lang = null,
         ?float $lat = null,
         ?string $layer = null,
@@ -120,6 +128,7 @@ final class GeocodeForwardParams implements BaseModel
 
         null !== $bbox && $self['bbox'] = $bbox;
         null !== $countryCode && $self['countryCode'] = $countryCode;
+        null !== $format && $self['format'] = $format;
         null !== $lang && $self['lang'] = $lang;
         null !== $lat && $self['lat'] = $lat;
         null !== $layer && $self['layer'] = $layer;
@@ -158,6 +167,17 @@ final class GeocodeForwardParams implements BaseModel
     {
         $self = clone $this;
         $self['countryCode'] = $countryCode;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

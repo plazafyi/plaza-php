@@ -41,6 +41,7 @@ final class GeocodeRawService implements GeocodeRawContract
      * @param array{
      *   q: string,
      *   countryCode?: string,
+     *   format?: string,
      *   lang?: string,
      *   lat?: float,
      *   layer?: string,
@@ -83,6 +84,7 @@ final class GeocodeRawService implements GeocodeRawContract
      * @param array{
      *   q: string,
      *   countryCode?: string,
+     *   format?: string,
      *   lang?: string,
      *   lat?: float,
      *   layer?: string,
@@ -157,6 +159,7 @@ final class GeocodeRawService implements GeocodeRawContract
      *   q: string,
      *   bbox?: string,
      *   countryCode?: string,
+     *   format?: string,
      *   lang?: string,
      *   lat?: float,
      *   layer?: string,
@@ -200,6 +203,7 @@ final class GeocodeRawService implements GeocodeRawContract
      *   q: string,
      *   bbox?: string,
      *   countryCode?: string,
+     *   format?: string,
      *   lang?: string,
      *   lat?: float,
      *   layer?: string,
@@ -240,6 +244,7 @@ final class GeocodeRawService implements GeocodeRawContract
      * Reverse geocode a coordinate
      *
      * @param array{
+     *   format?: string,
      *   lang?: string,
      *   lat?: float,
      *   layer?: string,
@@ -279,6 +284,7 @@ final class GeocodeRawService implements GeocodeRawContract
      * Reverse geocode a coordinate
      *
      * @param array{
+     *   format?: string,
      *   lang?: string,
      *   lat?: float,
      *   layer?: string,

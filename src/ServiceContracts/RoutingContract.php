@@ -36,6 +36,7 @@ interface RoutingContract
      * @param float $lat Latitude
      * @param float $lng Longitude
      * @param float $time Travel time in seconds (1-7200)
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $mode Travel mode (auto, foot, bicycle)
      * @param string $outputFields Comma-separated property fields to include
      * @param bool $outputGeometry Include geometry (default true)
@@ -50,6 +51,7 @@ interface RoutingContract
         float $lat,
         float $lng,
         float $time,
+        ?string $format = null,
         ?string $mode = null,
         ?string $outputFields = null,
         ?bool $outputGeometry = null,
@@ -65,6 +67,7 @@ interface RoutingContract
      * @param float $lat Latitude
      * @param float $lng Longitude
      * @param float $time Travel time in seconds (1-7200)
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param string $mode Travel mode (auto, foot, bicycle)
      * @param string $outputFields Comma-separated property fields to include
      * @param bool $outputGeometry Include geometry (default true)
@@ -79,6 +82,7 @@ interface RoutingContract
         float $lat,
         float $lng,
         float $time,
+        ?string $format = null,
         ?string $mode = null,
         ?string $outputFields = null,
         ?bool $outputGeometry = null,
@@ -160,19 +164,20 @@ interface RoutingContract
     /**
      * @api
      *
-     * @param Destination|DestinationShape $destination geographic coordinate as a JSON object with `lat` and `lng` fields
-     * @param Origin|OriginShape $origin geographic coordinate as a JSON object with `lat` and `lng` fields
-     * @param int $alternatives Number of alternative routes to return (0-3, default 0). When > 0, response is a FeatureCollection of route Features.
-     * @param bool $annotations Include per-edge annotations (speed, duration) on the route (default: false)
-     * @param \DateTimeInterface|null $departAt Departure time for traffic-aware routing (ISO 8601)
-     * @param Ev|EvShape|null $ev Electric vehicle parameters for EV-aware routing
-     * @param string|null $exclude Comma-separated road types to exclude (e.g. `toll,motorway,ferry`)
-     * @param Geometries|value-of<Geometries> $geometries Geometry encoding format. Default: `geojson`.
-     * @param \Plaza\Routing\RoutingRouteParams\Mode|value-of<\Plaza\Routing\RoutingRouteParams\Mode> $mode Travel mode (default: `auto`)
-     * @param Overview|value-of<Overview> $overview Level of geometry detail: `full` (all points), `simplified` (Douglas-Peucker), `false` (no geometry). Default: `full`.
-     * @param bool $steps Include turn-by-turn navigation steps (default: false)
-     * @param TrafficModel|value-of<TrafficModel>|null $trafficModel Traffic prediction model (only used when `depart_at` is set)
-     * @param list<Waypoint|WaypointShape>|null $waypoints Intermediate waypoints to visit in order (maximum 25)
+     * @param Destination|DestinationShape $destination body param: Geographic coordinate as a JSON object with `lat` and `lng` fields
+     * @param Origin|OriginShape $origin body param: Geographic coordinate as a JSON object with `lat` and `lng` fields
+     * @param string $format Query param: Response format for alternatives: json (default), geojson, csv, ndjson
+     * @param int $alternatives Body param: Number of alternative routes to return (0-3, default 0). When > 0, response is a FeatureCollection of route Features.
+     * @param bool $annotations Body param: Include per-edge annotations (speed, duration) on the route (default: false)
+     * @param \DateTimeInterface|null $departAt Body param: Departure time for traffic-aware routing (ISO 8601)
+     * @param Ev|EvShape|null $ev Body param: Electric vehicle parameters for EV-aware routing
+     * @param string|null $exclude Body param: Comma-separated road types to exclude (e.g. `toll,motorway,ferry`)
+     * @param Geometries|value-of<Geometries> $geometries Body param: Geometry encoding format. Default: `geojson`.
+     * @param \Plaza\Routing\RoutingRouteParams\Mode|value-of<\Plaza\Routing\RoutingRouteParams\Mode> $mode Body param: Travel mode (default: `auto`)
+     * @param Overview|value-of<Overview> $overview Body param: Level of geometry detail: `full` (all points), `simplified` (Douglas-Peucker), `false` (no geometry). Default: `full`.
+     * @param bool $steps Body param: Include turn-by-turn navigation steps (default: false)
+     * @param TrafficModel|value-of<TrafficModel>|null $trafficModel Body param: Traffic prediction model (only used when `depart_at` is set)
+     * @param list<Waypoint|WaypointShape>|null $waypoints Body param: Intermediate waypoints to visit in order (maximum 25)
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
@@ -180,6 +185,7 @@ interface RoutingContract
     public function route(
         Destination|array $destination,
         Origin|array $origin,
+        ?string $format = null,
         int $alternatives = 0,
         bool $annotations = false,
         ?\DateTimeInterface $departAt = null,

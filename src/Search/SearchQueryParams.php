@@ -18,6 +18,7 @@ use Plaza\Core\Contracts\BaseModel;
  * @phpstan-type SearchQueryParamsShape = array{
  *   q: string,
  *   cursor?: string|null,
+ *   format?: string|null,
  *   limit?: int|null,
  *   outputFields?: string|null,
  *   outputInclude?: string|null,
@@ -42,6 +43,12 @@ final class SearchQueryParams implements BaseModel
      */
     #[Optional]
     public ?string $cursor;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Maximum results (default 25, max 100).
@@ -100,6 +107,7 @@ final class SearchQueryParams implements BaseModel
     public static function with(
         string $q,
         ?string $cursor = null,
+        ?string $format = null,
         ?int $limit = null,
         ?string $outputFields = null,
         ?string $outputInclude = null,
@@ -111,6 +119,7 @@ final class SearchQueryParams implements BaseModel
         $self['q'] = $q;
 
         null !== $cursor && $self['cursor'] = $cursor;
+        null !== $format && $self['format'] = $format;
         null !== $limit && $self['limit'] = $limit;
         null !== $outputFields && $self['outputFields'] = $outputFields;
         null !== $outputInclude && $self['outputInclude'] = $outputInclude;
@@ -138,6 +147,17 @@ final class SearchQueryParams implements BaseModel
     {
         $self = clone $this;
         $self['cursor'] = $cursor;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

@@ -33,6 +33,7 @@ final class SearchRawService implements SearchRawContract
      * @param array{
      *   q: string,
      *   cursor?: string,
+     *   format?: string,
      *   limit?: int,
      *   outputFields?: string,
      *   outputInclude?: string,
@@ -80,6 +81,7 @@ final class SearchRawService implements SearchRawContract
      * @param array{
      *   q: string,
      *   cursor?: string,
+     *   format?: string,
      *   limit?: int,
      *   outputFields?: string,
      *   outputInclude?: string,

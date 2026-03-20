@@ -36,6 +36,7 @@ final class OptimizeRawService implements OptimizeRawContract
      *
      * @param array{
      *   waypoints: list<Waypoint|WaypointShape>,
+     *   format?: string,
      *   mode?: Mode|value-of<Mode>,
      *   roundtrip?: bool,
      * }|OptimizeCreateParams $params
@@ -53,12 +54,14 @@ final class OptimizeRawService implements OptimizeRawContract
             $params,
             $requestOptions,
         );
+        $query_params = array_flip(['format']);
 
         // @phpstan-ignore-next-line return.type
         return $this->client->request(
             method: 'post',
             path: 'api/v1/optimize',
-            body: (object) $parsed,
+            query: array_intersect_key($parsed, $query_params),
+            body: (object) array_diff_key($parsed, $query_params),
             options: $options,
             convert: OptimizeResult::class,
         );

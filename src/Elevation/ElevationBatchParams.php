@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Plaza\Elevation;
 
+use Plaza\Core\Attributes\Optional;
 use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
@@ -18,7 +19,7 @@ use Plaza\Elevation\ElevationBatchParams\Coordinate;
  * @phpstan-import-type CoordinateShape from \Plaza\Elevation\ElevationBatchParams\Coordinate
  *
  * @phpstan-type ElevationBatchParamsShape = array{
- *   coordinates: list<Coordinate|CoordinateShape>
+ *   coordinates: list<Coordinate|CoordinateShape>, format?: string|null
  * }
  */
 final class ElevationBatchParams implements BaseModel
@@ -34,6 +35,12 @@ final class ElevationBatchParams implements BaseModel
      */
     #[Required(list: Coordinate::class)]
     public array $coordinates;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * `new ElevationBatchParams()` is missing required properties by the API.
@@ -61,11 +68,13 @@ final class ElevationBatchParams implements BaseModel
      *
      * @param list<Coordinate|CoordinateShape> $coordinates
      */
-    public static function with(array $coordinates): self
+    public static function with(array $coordinates, ?string $format = null): self
     {
         $self = new self;
 
         $self['coordinates'] = $coordinates;
+
+        null !== $format && $self['format'] = $format;
 
         return $self;
     }
@@ -79,6 +88,17 @@ final class ElevationBatchParams implements BaseModel
     {
         $self = clone $this;
         $self['coordinates'] = $coordinates;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

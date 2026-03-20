@@ -19,6 +19,7 @@ use Plaza\Core\Contracts\BaseModel;
  *   lat: float,
  *   lng: float,
  *   time: float,
+ *   format?: string|null,
  *   mode?: string|null,
  *   outputFields?: string|null,
  *   outputGeometry?: bool|null,
@@ -50,6 +51,12 @@ final class RoutingIsochronePostParams implements BaseModel
      */
     #[Required]
     public float $time;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Travel mode (auto, foot, bicycle).
@@ -115,6 +122,7 @@ final class RoutingIsochronePostParams implements BaseModel
         float $lat,
         float $lng,
         float $time,
+        ?string $format = null,
         ?string $mode = null,
         ?string $outputFields = null,
         ?bool $outputGeometry = null,
@@ -128,6 +136,7 @@ final class RoutingIsochronePostParams implements BaseModel
         $self['lng'] = $lng;
         $self['time'] = $time;
 
+        null !== $format && $self['format'] = $format;
         null !== $mode && $self['mode'] = $mode;
         null !== $outputFields && $self['outputFields'] = $outputFields;
         null !== $outputGeometry && $self['outputGeometry'] = $outputGeometry;
@@ -167,6 +176,17 @@ final class RoutingIsochronePostParams implements BaseModel
     {
         $self = clone $this;
         $self['time'] = $time;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

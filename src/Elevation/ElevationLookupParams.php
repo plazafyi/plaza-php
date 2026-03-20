@@ -15,6 +15,7 @@ use Plaza\Core\Contracts\BaseModel;
  * @see Plaza\Services\ElevationService::lookup()
  *
  * @phpstan-type ElevationLookupParamsShape = array{
+ *   format?: string|null,
  *   lat?: float|null,
  *   lng?: float|null,
  *   locations?: string|null,
@@ -28,6 +29,12 @@ final class ElevationLookupParams implements BaseModel
     /** @use SdkModel<ElevationLookupParamsShape> */
     use SdkModel;
     use SdkParams;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Latitude (single point).
@@ -76,6 +83,7 @@ final class ElevationLookupParams implements BaseModel
      * You must use named parameters to construct any parameters with a default value.
      */
     public static function with(
+        ?string $format = null,
         ?float $lat = null,
         ?float $lng = null,
         ?string $locations = null,
@@ -85,12 +93,24 @@ final class ElevationLookupParams implements BaseModel
     ): self {
         $self = new self;
 
+        null !== $format && $self['format'] = $format;
         null !== $lat && $self['lat'] = $lat;
         null !== $lng && $self['lng'] = $lng;
         null !== $locations && $self['locations'] = $locations;
         null !== $outputFields && $self['outputFields'] = $outputFields;
         null !== $outputInclude && $self['outputInclude'] = $outputInclude;
         null !== $outputPrecision && $self['outputPrecision'] = $outputPrecision;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

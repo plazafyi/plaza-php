@@ -46,6 +46,7 @@ final class RoutingTest extends TestCase
             lat: 0,
             lng: 0,
             time: 0,
+            format: 'format',
             mode: 'mode',
             outputFields: 'output[fields]',
             outputGeometry: true,
@@ -74,6 +75,7 @@ final class RoutingTest extends TestCase
             lat: 0,
             lng: 0,
             time: 0,
+            format: 'format',
             mode: 'mode',
             outputFields: 'output[fields]',
             outputGeometry: true,
@@ -185,6 +187,7 @@ final class RoutingTest extends TestCase
         $result = $this->client->routing->route(
             destination: ['lat' => 48.8584, 'lng' => 2.2945],
             origin: ['lat' => 48.8566, 'lng' => 2.3522],
+            format: 'format',
             alternatives: 0,
             annotations: true,
             departAt: new \DateTimeImmutable('2019-12-27T18:11:19.117Z'),

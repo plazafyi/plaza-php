@@ -16,6 +16,7 @@ use Plaza\Core\Contracts\BaseModel;
  *
  * @phpstan-type DatasetFeaturesParamsShape = array{
  *   cursor?: string|null,
+ *   format?: string|null,
  *   limit?: int|null,
  *   outputBuffer?: float|null,
  *   outputCentroid?: bool|null,
@@ -38,6 +39,12 @@ final class DatasetFeaturesParams implements BaseModel
      */
     #[Optional]
     public ?string $cursor;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Maximum results.
@@ -105,6 +112,7 @@ final class DatasetFeaturesParams implements BaseModel
      */
     public static function with(
         ?string $cursor = null,
+        ?string $format = null,
         ?int $limit = null,
         ?float $outputBuffer = null,
         ?bool $outputCentroid = null,
@@ -118,6 +126,7 @@ final class DatasetFeaturesParams implements BaseModel
         $self = new self;
 
         null !== $cursor && $self['cursor'] = $cursor;
+        null !== $format && $self['format'] = $format;
         null !== $limit && $self['limit'] = $limit;
         null !== $outputBuffer && $self['outputBuffer'] = $outputBuffer;
         null !== $outputCentroid && $self['outputCentroid'] = $outputCentroid;
@@ -138,6 +147,17 @@ final class DatasetFeaturesParams implements BaseModel
     {
         $self = clone $this;
         $self['cursor'] = $cursor;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

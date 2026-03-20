@@ -136,6 +136,7 @@ interface ElementsContract
      * @param string $contains Geometry that features must contain
      * @param string $crosses Geometry that features must cross
      * @param string $cursor Cursor for pagination
+     * @param string $format Response format. json (default) returns paginated GeoJSON. geojson/csv/ndjson stream via chunked transfer encoding.
      * @param string $h3 Legacy shorthand. H3 cell index. Use spatial predicates instead.
      * @param string $intersects Geometry that features must intersect
      * @param int $limit Maximum results (default 100, max 10000)
@@ -161,6 +162,7 @@ interface ElementsContract
         ?string $contains = null,
         ?string $crosses = null,
         ?string $cursor = null,
+        ?string $format = null,
         ?string $h3 = null,
         ?string $intersects = null,
         ?int $limit = null,
@@ -187,6 +189,7 @@ interface ElementsContract
      * @param string $contains Geometry that features must contain
      * @param string $crosses Geometry that features must cross
      * @param string $cursor Cursor for pagination
+     * @param string $format Response format. json (default) returns paginated GeoJSON. geojson/csv/ndjson stream via chunked transfer encoding.
      * @param string $h3 Legacy shorthand. H3 cell index. Use spatial predicates instead.
      * @param string $intersects Geometry that features must intersect
      * @param int $limit Maximum results (default 100, max 10000)
@@ -212,6 +215,7 @@ interface ElementsContract
         ?string $contains = null,
         ?string $crosses = null,
         ?string $cursor = null,
+        ?string $format = null,
         ?string $h3 = null,
         ?string $intersects = null,
         ?int $limit = null,

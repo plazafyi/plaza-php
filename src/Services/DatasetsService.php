@@ -137,6 +137,7 @@ final class DatasetsService implements DatasetsContract
      *
      * @param string $id Dataset ID
      * @param string $cursor Cursor for pagination
+     * @param string $format Response format: json (default), geojson, csv, ndjson
      * @param int $limit Maximum results
      * @param float $outputBuffer Buffer geometry by meters
      * @param bool $outputCentroid Replace geometry with centroid
@@ -153,6 +154,7 @@ final class DatasetsService implements DatasetsContract
     public function features(
         string $id,
         ?string $cursor = null,
+        ?string $format = null,
         ?int $limit = null,
         ?float $outputBuffer = null,
         ?bool $outputCentroid = null,
@@ -167,6 +169,7 @@ final class DatasetsService implements DatasetsContract
         $params = Util::removeNulls(
             [
                 'cursor' => $cursor,
+                'format' => $format,
                 'limit' => $limit,
                 'outputBuffer' => $outputBuffer,
                 'outputCentroid' => $outputCentroid,
