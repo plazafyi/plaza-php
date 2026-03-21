@@ -21,7 +21,7 @@ final class Step implements BaseModel
     use SdkModel;
 
     /**
-     * Step type: `overpass`, `sparql`, `filter`, or `transform`.
+     * Step type: `overpass`, `filter`, or `transform`.
      *
      * @var value-of<Type> $type
      */
@@ -29,7 +29,7 @@ final class Step implements BaseModel
     public string $type;
 
     /**
-     * Query string for this step (required for overpass/sparql steps).
+     * Query string for this step (required for overpass steps).
      */
     #[Optional]
     public ?string $query;
@@ -72,7 +72,7 @@ final class Step implements BaseModel
     }
 
     /**
-     * Step type: `overpass`, `sparql`, `filter`, or `transform`.
+     * Step type: `overpass`, `filter`, or `transform`.
      *
      * @param Type|value-of<Type> $type
      */
@@ -85,7 +85,7 @@ final class Step implements BaseModel
     }
 
     /**
-     * Query string for this step (required for overpass/sparql steps).
+     * Query string for this step (required for overpass steps).
      */
     public function withQuery(string $query): self
     {

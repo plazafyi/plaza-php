@@ -10,8 +10,6 @@ use Plaza\PlazaClientService\FeatureCollection;
 use Plaza\Query\QueryExecuteParams;
 use Plaza\Query\QueryExecuteResponse;
 use Plaza\Query\QueryOverpassParams;
-use Plaza\Query\QuerySparqlParams;
-use Plaza\Query\SparqlResult;
 use Plaza\RequestOptions;
 
 /**
@@ -46,21 +44,6 @@ interface QueryRawContract
      */
     public function overpass(
         array|QueryOverpassParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse;
-
-    /**
-     * @api
-     *
-     * @param array<string,mixed>|QuerySparqlParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<SparqlResult>
-     *
-     * @throws APIException
-     */
-    public function sparql(
-        array|QuerySparqlParams $params,
         RequestOptions|array|null $requestOptions = null,
     ): BaseResponse;
 }

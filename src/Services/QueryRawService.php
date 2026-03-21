@@ -12,8 +12,6 @@ use Plaza\Query\QueryExecuteParams;
 use Plaza\Query\QueryExecuteParams\Step;
 use Plaza\Query\QueryExecuteResponse;
 use Plaza\Query\QueryOverpassParams;
-use Plaza\Query\QuerySparqlParams;
-use Plaza\Query\SparqlResult;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\QueryRawContract;
 
@@ -90,37 +88,6 @@ final class QueryRawService implements QueryRawContract
             body: (object) array_diff_key($parsed, $query_params),
             options: $options,
             convert: FeatureCollection::class,
-        );
-    }
-
-    /**
-     * @api
-     *
-     * Execute a SPARQL query
-     *
-     * @param array{query: string}|QuerySparqlParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<SparqlResult>
-     *
-     * @throws APIException
-     */
-    public function sparql(
-        array|QuerySparqlParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse {
-        [$parsed, $options] = QuerySparqlParams::parseRequest(
-            $params,
-            $requestOptions,
-        );
-
-        // @phpstan-ignore-next-line return.type
-        return $this->client->request(
-            method: 'post',
-            path: 'api/v1/sparql',
-            body: (object) $parsed,
-            options: $options,
-            convert: SparqlResult::class,
         );
     }
 }
