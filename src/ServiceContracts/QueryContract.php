@@ -8,7 +8,6 @@ use Plaza\Core\Exceptions\APIException;
 use Plaza\PlazaClientService\FeatureCollection;
 use Plaza\Query\QueryExecuteParams\Step;
 use Plaza\Query\QueryExecuteResponse;
-use Plaza\Query\SparqlResult;
 use Plaza\RequestOptions;
 
 /**
@@ -44,17 +43,4 @@ interface QueryContract
         ?string $format = null,
         RequestOptions|array|null $requestOptions = null,
     ): FeatureCollection;
-
-    /**
-     * @api
-     *
-     * @param string $query SPARQL query string
-     * @param RequestOpts|null $requestOptions
-     *
-     * @throws APIException
-     */
-    public function sparql(
-        string $query,
-        RequestOptions|array|null $requestOptions = null
-    ): SparqlResult;
 }

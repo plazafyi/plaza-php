@@ -9,7 +9,6 @@ use Plaza\Client;
 use Plaza\Core\Util;
 use Plaza\PlazaClientService\FeatureCollection;
 use Plaza\Query\QueryExecuteResponse;
-use Plaza\Query\SparqlResult;
 
 /**
  * @internal
@@ -70,27 +69,5 @@ final class QueryTest extends TestCase
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(FeatureCollection::class, $result);
-    }
-
-    #[Test]
-    public function testSparql(): void
-    {
-        $result = $this->client->query->sparql(
-            query: 'SELECT ?s ?name WHERE { ?s osm:name ?name . ?s osm:amenity "cafe" } LIMIT 10',
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(SparqlResult::class, $result);
-    }
-
-    #[Test]
-    public function testSparqlWithOptionalParams(): void
-    {
-        $result = $this->client->query->sparql(
-            query: 'SELECT ?s ?name WHERE { ?s osm:name ?name . ?s osm:amenity "cafe" } LIMIT 10',
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(SparqlResult::class, $result);
     }
 }
