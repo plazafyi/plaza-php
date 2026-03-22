@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Plaza\Query;
 
+use Plaza\Core\Attributes\Optional;
 use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\Query\QueryExecuteParams\Step;
 
 /**
- * Execute a multi-step query pipeline.
+ * Execute a PlazaQL query.
  *
  * @see Plaza\Services\QueryService::execute()
  *
- * @phpstan-import-type StepShape from \Plaza\Query\QueryExecuteParams\Step
- *
- * @phpstan-type QueryExecuteParamsShape = array{steps: list<Step|StepShape>}
+ * @phpstan-type QueryExecuteParamsShape = array{
+ *   data: string, format?: string|null
+ * }
  */
 final class QueryExecuteParams implements BaseModel
 {
@@ -26,25 +26,29 @@ final class QueryExecuteParams implements BaseModel
     use SdkParams;
 
     /**
-     * Ordered list of query steps to execute.
-     *
-     * @var list<Step> $steps
+     * PlazaQL query string.
      */
-    #[Required(list: Step::class)]
-    public array $steps;
+    #[Required]
+    public string $data;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * `new QueryExecuteParams()` is missing required properties by the API.
      *
      * To enforce required parameters use
      * ```
-     * QueryExecuteParams::with(steps: ...)
+     * QueryExecuteParams::with(data: ...)
      * ```
      *
      * Otherwise ensure the following setters are called
      *
      * ```
-     * (new QueryExecuteParams)->withSteps(...)
+     * (new QueryExecuteParams)->withData(...)
      * ```
      */
     public function __construct()
@@ -56,27 +60,36 @@ final class QueryExecuteParams implements BaseModel
      * Construct an instance from the required parameters.
      *
      * You must use named parameters to construct any parameters with a default value.
-     *
-     * @param list<Step|StepShape> $steps
      */
-    public static function with(array $steps): self
+    public static function with(string $data, ?string $format = null): self
     {
         $self = new self;
 
-        $self['steps'] = $steps;
+        $self['data'] = $data;
+
+        null !== $format && $self['format'] = $format;
 
         return $self;
     }
 
     /**
-     * Ordered list of query steps to execute.
-     *
-     * @param list<Step|StepShape> $steps
+     * PlazaQL query string.
      */
-    public function withSteps(array $steps): self
+    public function withData(string $data): self
     {
         $self = clone $this;
-        $self['steps'] = $steps;
+        $self['data'] = $data;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

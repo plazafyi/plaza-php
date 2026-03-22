@@ -8,13 +8,10 @@ use Plaza\Client;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\Core\Util;
 use Plaza\PlazaClientService\FeatureCollection;
-use Plaza\Query\QueryExecuteParams\Step;
-use Plaza\Query\QueryExecuteResponse;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\QueryContract;
 
 /**
- * @phpstan-import-type StepShape from \Plaza\Query\QueryExecuteParams\Step
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 final class QueryService implements QueryContract
@@ -35,37 +32,15 @@ final class QueryService implements QueryContract
     /**
      * @api
      *
-     * Execute a multi-step query pipeline
+     * Execute a PlazaQL query
      *
-     * @param list<Step|StepShape> $steps Ordered list of query steps to execute
-     * @param RequestOpts|null $requestOptions
-     *
-     * @throws APIException
-     */
-    public function execute(
-        array $steps,
-        RequestOptions|array|null $requestOptions = null
-    ): QueryExecuteResponse {
-        $params = Util::removeNulls(['steps' => $steps]);
-
-        // @phpstan-ignore-next-line argument.type
-        $response = $this->raw->execute(params: $params, requestOptions: $requestOptions);
-
-        return $response->parse();
-    }
-
-    /**
-     * @api
-     *
-     * Execute an Overpass QL query
-     *
-     * @param string $data Body param: Overpass QL query string
+     * @param string $data Body param: PlazaQL query string
      * @param string $format Query param: Response format: json (default), geojson, csv, ndjson
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
-    public function overpass(
+    public function execute(
         string $data,
         ?string $format = null,
         RequestOptions|array|null $requestOptions = null,
@@ -73,7 +48,7 @@ final class QueryService implements QueryContract
         $params = Util::removeNulls(['data' => $data, 'format' => $format]);
 
         // @phpstan-ignore-next-line argument.type
-        $response = $this->raw->overpass(params: $params, requestOptions: $requestOptions);
+        $response = $this->raw->execute(params: $params, requestOptions: $requestOptions);
 
         return $response->parse();
     }
