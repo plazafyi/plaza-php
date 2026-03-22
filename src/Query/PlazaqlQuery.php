@@ -9,33 +9,33 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
- * Overpass QL query request. The query is executed against Plaza's OSM database and results are returned as GeoJSON.
+ * PlazaQL query request. The query is executed against Plaza's OSM database and results are returned as GeoJSON.
  *
- * @phpstan-type OverpassQueryShape = array{data: string}
+ * @phpstan-type PlazaqlQueryShape = array{data: string}
  */
-final class OverpassQuery implements BaseModel
+final class PlazaqlQuery implements BaseModel
 {
-    /** @use SdkModel<OverpassQueryShape> */
+    /** @use SdkModel<PlazaqlQueryShape> */
     use SdkModel;
 
     /**
-     * Overpass QL query string.
+     * PlazaQL query string.
      */
     #[Required]
     public string $data;
 
     /**
-     * `new OverpassQuery()` is missing required properties by the API.
+     * `new PlazaqlQuery()` is missing required properties by the API.
      *
      * To enforce required parameters use
      * ```
-     * OverpassQuery::with(data: ...)
+     * PlazaqlQuery::with(data: ...)
      * ```
      *
      * Otherwise ensure the following setters are called
      *
      * ```
-     * (new OverpassQuery)->withData(...)
+     * (new PlazaqlQuery)->withData(...)
      * ```
      */
     public function __construct()
@@ -58,7 +58,7 @@ final class OverpassQuery implements BaseModel
     }
 
     /**
-     * Overpass QL query string.
+     * PlazaQL query string.
      */
     public function withData(string $data): self
     {

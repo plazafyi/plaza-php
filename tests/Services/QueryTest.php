@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Plaza\Client;
 use Plaza\Core\Util;
 use Plaza\PlazaClientService\FeatureCollection;
-use Plaza\Query\QueryExecuteResponse;
 
 /**
  * @internal
@@ -31,28 +30,8 @@ final class QueryTest extends TestCase
     #[Test]
     public function testExecute(): void
     {
-        $result = $this->client->query->execute(steps: [['type' => 'overpass']]);
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(QueryExecuteResponse::class, $result);
-    }
-
-    #[Test]
-    public function testExecuteWithOptionalParams(): void
-    {
         $result = $this->client->query->execute(
-            steps: [['type' => 'overpass', 'query' => 'query']]
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(QueryExecuteResponse::class, $result);
-    }
-
-    #[Test]
-    public function testOverpass(): void
-    {
-        $result = $this->client->query->overpass(
-            data: '[out:json];node[amenity=cafe](around:500,48.8566,2.3522);out body;'
+            data: '$$ = search(node, amenity: "cafe").around(distance: 500, geometry: point(48.8566, 2.3522));',
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -60,10 +39,10 @@ final class QueryTest extends TestCase
     }
 
     #[Test]
-    public function testOverpassWithOptionalParams(): void
+    public function testExecuteWithOptionalParams(): void
     {
-        $result = $this->client->query->overpass(
-            data: '[out:json];node[amenity=cafe](around:500,48.8566,2.3522);out body;',
+        $result = $this->client->query->execute(
+            data: '$$ = search(node, amenity: "cafe").around(distance: 500, geometry: point(48.8566, 2.3522));',
             format: 'format',
         );
 
