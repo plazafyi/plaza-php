@@ -9,15 +9,15 @@ use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 use Plaza\Optimize\OptimizeRequest\Mode;
-use Plaza\Optimize\OptimizeRequest\Waypoint;
+use Plaza\PlazaClientService\MultiPointGeometry;
 
 /**
  * Route optimization (Travelling Salesman) request. Finds the most efficient order to visit a set of waypoints. Minimum 2 waypoints, maximum 50. For large inputs, the request may be processed asynchronously.
  *
- * @phpstan-import-type WaypointShape from \Plaza\Optimize\OptimizeRequest\Waypoint
+ * @phpstan-import-type MultiPointGeometryShape from \Plaza\PlazaClientService\MultiPointGeometry
  *
  * @phpstan-type OptimizeRequestShape = array{
- *   waypoints: list<Waypoint|WaypointShape>,
+ *   waypoints: MultiPointGeometry|MultiPointGeometryShape,
  *   mode?: null|Mode|value-of<Mode>,
  *   roundtrip?: bool|null,
  * }
@@ -28,12 +28,10 @@ final class OptimizeRequest implements BaseModel
     use SdkModel;
 
     /**
-     * Waypoints to visit in optimized order (2-50 points).
-     *
-     * @var list<Waypoint> $waypoints
+     * GeoJSON MultiPoint geometry per RFC 7946. An array of positions.
      */
-    #[Required(list: Waypoint::class)]
-    public array $waypoints;
+    #[Required]
+    public MultiPointGeometry $waypoints;
 
     /**
      * Travel mode (default: `auto`).
@@ -73,13 +71,13 @@ final class OptimizeRequest implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param list<Waypoint|WaypointShape> $waypoints
+     * @param MultiPointGeometry|MultiPointGeometryShape $waypoints
      * @param Mode|value-of<Mode>|null $mode
      */
     public static function with(
-        array $waypoints,
+        MultiPointGeometry|array $waypoints,
         Mode|string|null $mode = null,
-        ?bool $roundtrip = null
+        ?bool $roundtrip = null,
     ): self {
         $self = new self;
 
@@ -92,11 +90,11 @@ final class OptimizeRequest implements BaseModel
     }
 
     /**
-     * Waypoints to visit in optimized order (2-50 points).
+     * GeoJSON MultiPoint geometry per RFC 7946. An array of positions.
      *
-     * @param list<Waypoint|WaypointShape> $waypoints
+     * @param MultiPointGeometry|MultiPointGeometryShape $waypoints
      */
-    public function withWaypoints(array $waypoints): self
+    public function withWaypoints(MultiPointGeometry|array $waypoints): self
     {
         $self = clone $this;
         $self['waypoints'] = $waypoints;

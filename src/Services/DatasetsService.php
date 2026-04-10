@@ -9,7 +9,6 @@ use Plaza\Core\Exceptions\APIException;
 use Plaza\Core\Util;
 use Plaza\Datasets\Dataset;
 use Plaza\Datasets\DatasetList;
-use Plaza\PlazaClientService\FeatureCollection;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\DatasetsContract;
 
@@ -34,7 +33,7 @@ final class DatasetsService implements DatasetsContract
     /**
      * @api
      *
-     * Create a new dataset (admin only)
+     * Create a new dataset
      *
      * @param string $name Human-readable dataset name
      * @param string $slug URL-friendly identifier (lowercase, hyphens, no spaces)
@@ -42,6 +41,7 @@ final class DatasetsService implements DatasetsContract
      * @param string|null $description Dataset description
      * @param string|null $license License identifier (e.g. CC-BY-4.0)
      * @param string|null $sourceURL Source data URL
+     * @param bool|null $strictMode Enable strict schema validation (default true)
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
@@ -53,6 +53,7 @@ final class DatasetsService implements DatasetsContract
         ?string $description = null,
         ?string $license = null,
         ?string $sourceURL = null,
+        ?bool $strictMode = null,
         RequestOptions|array|null $requestOptions = null,
     ): Dataset {
         $params = Util::removeNulls(
@@ -63,6 +64,7 @@ final class DatasetsService implements DatasetsContract
                 'description' => $description,
                 'license' => $license,
                 'sourceURL' => $sourceURL,
+                'strictMode' => $strictMode,
             ],
         );
 
@@ -95,17 +97,21 @@ final class DatasetsService implements DatasetsContract
     /**
      * @api
      *
-     * List all datasets
+     * List datasets
      *
+     * @param string $scope Filter by scope: plaza, user. Default shows user's own + plaza datasets.
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function list(
+        ?string $scope = null,
         RequestOptions|array|null $requestOptions = null
     ): DatasetList {
+        $params = Util::removeNulls(['scope' => $scope]);
+
         // @phpstan-ignore-next-line argument.type
-        $response = $this->raw->list(requestOptions: $requestOptions);
+        $response = $this->raw->list(params: $params, requestOptions: $requestOptions);
 
         return $response->parse();
     }
@@ -126,64 +132,6 @@ final class DatasetsService implements DatasetsContract
     ): mixed {
         // @phpstan-ignore-next-line argument.type
         $response = $this->raw->delete($id, requestOptions: $requestOptions);
-
-        return $response->parse();
-    }
-
-    /**
-     * @api
-     *
-     * Query features in a dataset
-     *
-     * @param string $id Dataset ID
-     * @param string $cursor Cursor for pagination
-     * @param string $format Response format: json (default), geojson, csv, ndjson
-     * @param int $limit Maximum results
-     * @param float $outputBuffer Buffer geometry by meters
-     * @param bool $outputCentroid Replace geometry with centroid
-     * @param string $outputFields Comma-separated property fields to include
-     * @param bool $outputGeometry Include geometry (default true)
-     * @param string $outputInclude Extra computed fields: bbox, distance, center
-     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
-     * @param float $outputSimplify Simplify geometry tolerance in meters
-     * @param string $outputSort Sort by: distance, name, osm_id
-     * @param RequestOpts|null $requestOptions
-     *
-     * @throws APIException
-     */
-    public function features(
-        string $id,
-        ?string $cursor = null,
-        ?string $format = null,
-        ?int $limit = null,
-        ?float $outputBuffer = null,
-        ?bool $outputCentroid = null,
-        ?string $outputFields = null,
-        ?bool $outputGeometry = null,
-        ?string $outputInclude = null,
-        ?int $outputPrecision = null,
-        ?float $outputSimplify = null,
-        ?string $outputSort = null,
-        RequestOptions|array|null $requestOptions = null,
-    ): FeatureCollection {
-        $params = Util::removeNulls(
-            [
-                'cursor' => $cursor,
-                'format' => $format,
-                'limit' => $limit,
-                'outputBuffer' => $outputBuffer,
-                'outputCentroid' => $outputCentroid,
-                'outputFields' => $outputFields,
-                'outputGeometry' => $outputGeometry,
-                'outputInclude' => $outputInclude,
-                'outputPrecision' => $outputPrecision,
-                'outputSimplify' => $outputSimplify,
-                'outputSort' => $outputSort,
-            ],
-        );
-
-        // @phpstan-ignore-next-line argument.type
-        $response = $this->raw->features($id, params: $params, requestOptions: $requestOptions);
 
         return $response->parse();
     }

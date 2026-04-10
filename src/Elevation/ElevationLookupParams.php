@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace Plaza\Elevation;
 
 use Plaza\Core\Attributes\Optional;
+use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
+use Plaza\PlazaClientService\MultiPointGeometry;
+use Plaza\PlazaClientService\PointGeometry;
 
 /**
  * Look up elevation at one or more points.
  *
  * @see Plaza\Services\ElevationService::lookup()
  *
+ * @phpstan-import-type GeometryVariants from \Plaza\Elevation\ElevationLookupParams\Geometry
+ * @phpstan-import-type GeometryShape from \Plaza\Elevation\ElevationLookupParams\Geometry
+ *
  * @phpstan-type ElevationLookupParamsShape = array{
- *   format?: string|null,
- *   lat?: float|null,
- *   lng?: float|null,
- *   locations?: string|null,
- *   outputFields?: string|null,
- *   outputInclude?: string|null,
- *   outputPrecision?: int|null,
+ *   geometry: GeometryShape, format?: string|null
  * }
  */
 final class ElevationLookupParams implements BaseModel
@@ -31,47 +31,33 @@ final class ElevationLookupParams implements BaseModel
     use SdkParams;
 
     /**
+     * Point or MultiPoint geometry to look up elevations for.
+     *
+     * @var GeometryVariants $geometry
+     */
+    #[Required]
+    public PointGeometry|MultiPointGeometry $geometry;
+
+    /**
      * Response format: json (default), geojson, csv, ndjson.
      */
     #[Optional]
     public ?string $format;
 
     /**
-     * Latitude (single point).
+     * `new ElevationLookupParams()` is missing required properties by the API.
+     *
+     * To enforce required parameters use
+     * ```
+     * ElevationLookupParams::with(geometry: ...)
+     * ```
+     *
+     * Otherwise ensure the following setters are called
+     *
+     * ```
+     * (new ElevationLookupParams)->withGeometry(...)
+     * ```
      */
-    #[Optional]
-    public ?float $lat;
-
-    /**
-     * Longitude (single point).
-     */
-    #[Optional]
-    public ?float $lng;
-
-    /**
-     * Pipe-separated lng,lat pairs (batch).
-     */
-    #[Optional]
-    public ?string $locations;
-
-    /**
-     * Comma-separated property fields to include.
-     */
-    #[Optional]
-    public ?string $outputFields;
-
-    /**
-     * Extra computed fields: bbox, center.
-     */
-    #[Optional]
-    public ?string $outputInclude;
-
-    /**
-     * Coordinate decimal precision (1-15, default 7).
-     */
-    #[Optional]
-    public ?int $outputPrecision;
-
     public function __construct()
     {
         $this->initialize();
@@ -81,25 +67,32 @@ final class ElevationLookupParams implements BaseModel
      * Construct an instance from the required parameters.
      *
      * You must use named parameters to construct any parameters with a default value.
+     *
+     * @param GeometryShape $geometry
      */
     public static function with(
-        ?string $format = null,
-        ?float $lat = null,
-        ?float $lng = null,
-        ?string $locations = null,
-        ?string $outputFields = null,
-        ?string $outputInclude = null,
-        ?int $outputPrecision = null,
+        PointGeometry|array|MultiPointGeometry $geometry,
+        ?string $format = null
     ): self {
         $self = new self;
 
+        $self['geometry'] = $geometry;
+
         null !== $format && $self['format'] = $format;
-        null !== $lat && $self['lat'] = $lat;
-        null !== $lng && $self['lng'] = $lng;
-        null !== $locations && $self['locations'] = $locations;
-        null !== $outputFields && $self['outputFields'] = $outputFields;
-        null !== $outputInclude && $self['outputInclude'] = $outputInclude;
-        null !== $outputPrecision && $self['outputPrecision'] = $outputPrecision;
+
+        return $self;
+    }
+
+    /**
+     * Point or MultiPoint geometry to look up elevations for.
+     *
+     * @param GeometryShape $geometry
+     */
+    public function withGeometry(
+        PointGeometry|array|MultiPointGeometry $geometry
+    ): self {
+        $self = clone $this;
+        $self['geometry'] = $geometry;
 
         return $self;
     }
@@ -111,72 +104,6 @@ final class ElevationLookupParams implements BaseModel
     {
         $self = clone $this;
         $self['format'] = $format;
-
-        return $self;
-    }
-
-    /**
-     * Latitude (single point).
-     */
-    public function withLat(float $lat): self
-    {
-        $self = clone $this;
-        $self['lat'] = $lat;
-
-        return $self;
-    }
-
-    /**
-     * Longitude (single point).
-     */
-    public function withLng(float $lng): self
-    {
-        $self = clone $this;
-        $self['lng'] = $lng;
-
-        return $self;
-    }
-
-    /**
-     * Pipe-separated lng,lat pairs (batch).
-     */
-    public function withLocations(string $locations): self
-    {
-        $self = clone $this;
-        $self['locations'] = $locations;
-
-        return $self;
-    }
-
-    /**
-     * Comma-separated property fields to include.
-     */
-    public function withOutputFields(string $outputFields): self
-    {
-        $self = clone $this;
-        $self['outputFields'] = $outputFields;
-
-        return $self;
-    }
-
-    /**
-     * Extra computed fields: bbox, center.
-     */
-    public function withOutputInclude(string $outputInclude): self
-    {
-        $self = clone $this;
-        $self['outputInclude'] = $outputInclude;
-
-        return $self;
-    }
-
-    /**
-     * Coordinate decimal precision (1-15, default 7).
-     */
-    public function withOutputPrecision(int $outputPrecision): self
-    {
-        $self = clone $this;
-        $self['outputPrecision'] = $outputPrecision;
 
         return $self;
     }

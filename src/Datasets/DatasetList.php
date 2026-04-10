@@ -9,7 +9,7 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
- * List of all available datasets.
+ * List of datasets visible to the authenticated user.
  *
  * @phpstan-import-type DatasetShape from \Plaza\Datasets\Dataset
  *

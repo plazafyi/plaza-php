@@ -5,24 +5,25 @@ declare(strict_types=1);
 namespace Plaza\Geocode;
 
 use Plaza\Core\Attributes\Optional;
+use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
+use Plaza\PlazaClientService\PointGeometry;
 
 /**
  * Reverse geocode a coordinate.
  *
  * @see Plaza\Services\GeocodeService::reverse()
  *
+ * @phpstan-import-type PointGeometryShape from \Plaza\PlazaClientService\PointGeometry
+ *
  * @phpstan-type GeocodeReverseParamsShape = array{
+ *   geometry: PointGeometry|PointGeometryShape,
  *   format?: string|null,
  *   lang?: string|null,
- *   lat?: float|null,
- *   layer?: string|null,
  *   limit?: int|null,
- *   lng?: float|null,
- *   near?: string|null,
- *   radius?: int|null,
+ *   radius?: float|null,
  * }
  */
 final class GeocodeReverseParams implements BaseModel
@@ -32,53 +33,49 @@ final class GeocodeReverseParams implements BaseModel
     use SdkParams;
 
     /**
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
+     */
+    #[Required]
+    public PointGeometry $geometry;
+
+    /**
      * Response format: json (default), geojson, csv, ndjson.
      */
     #[Optional]
     public ?string $format;
 
     /**
-     * Language code for localized names (e.g. en, de, fr).
+     * Preferred response language (ISO 639-1).
      */
-    #[Optional]
+    #[Optional(nullable: true)]
     public ?string $lang;
 
     /**
-     * Legacy shorthand. Latitude. Use near param instead.
+     * Maximum number of results (default: 1, max: 50).
      */
-    #[Optional]
-    public ?float $lat;
-
-    /**
-     * Filter by layer: house or poi.
-     */
-    #[Optional]
-    public ?string $layer;
-
-    /**
-     * Maximum results (default 1, max 20).
-     */
-    #[Optional]
+    #[Optional(nullable: true)]
     public ?int $limit;
 
     /**
-     * Legacy shorthand. Longitude. Use near param instead.
+     * Search radius in meters (default: 100).
      */
-    #[Optional]
-    public ?float $lng;
+    #[Optional(nullable: true)]
+    public ?float $radius;
 
     /**
-     * Point geometry for reverse geocode (lat,lng or GeoJSON). Alternative to lat/lng params.
+     * `new GeocodeReverseParams()` is missing required properties by the API.
+     *
+     * To enforce required parameters use
+     * ```
+     * GeocodeReverseParams::with(geometry: ...)
+     * ```
+     *
+     * Otherwise ensure the following setters are called
+     *
+     * ```
+     * (new GeocodeReverseParams)->withGeometry(...)
+     * ```
      */
-    #[Optional]
-    public ?string $near;
-
-    /**
-     * Search radius in meters (default 200, max 5000).
-     */
-    #[Optional]
-    public ?int $radius;
-
     public function __construct()
     {
         $this->initialize();
@@ -88,27 +85,37 @@ final class GeocodeReverseParams implements BaseModel
      * Construct an instance from the required parameters.
      *
      * You must use named parameters to construct any parameters with a default value.
+     *
+     * @param PointGeometry|PointGeometryShape $geometry
      */
     public static function with(
+        PointGeometry|array $geometry,
         ?string $format = null,
         ?string $lang = null,
-        ?float $lat = null,
-        ?string $layer = null,
         ?int $limit = null,
-        ?float $lng = null,
-        ?string $near = null,
-        ?int $radius = null,
+        ?float $radius = null,
     ): self {
         $self = new self;
 
+        $self['geometry'] = $geometry;
+
         null !== $format && $self['format'] = $format;
         null !== $lang && $self['lang'] = $lang;
-        null !== $lat && $self['lat'] = $lat;
-        null !== $layer && $self['layer'] = $layer;
         null !== $limit && $self['limit'] = $limit;
-        null !== $lng && $self['lng'] = $lng;
-        null !== $near && $self['near'] = $near;
         null !== $radius && $self['radius'] = $radius;
+
+        return $self;
+    }
+
+    /**
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
+     *
+     * @param PointGeometry|PointGeometryShape $geometry
+     */
+    public function withGeometry(PointGeometry|array $geometry): self
+    {
+        $self = clone $this;
+        $self['geometry'] = $geometry;
 
         return $self;
     }
@@ -125,9 +132,9 @@ final class GeocodeReverseParams implements BaseModel
     }
 
     /**
-     * Language code for localized names (e.g. en, de, fr).
+     * Preferred response language (ISO 639-1).
      */
-    public function withLang(string $lang): self
+    public function withLang(?string $lang): self
     {
         $self = clone $this;
         $self['lang'] = $lang;
@@ -136,31 +143,9 @@ final class GeocodeReverseParams implements BaseModel
     }
 
     /**
-     * Legacy shorthand. Latitude. Use near param instead.
+     * Maximum number of results (default: 1, max: 50).
      */
-    public function withLat(float $lat): self
-    {
-        $self = clone $this;
-        $self['lat'] = $lat;
-
-        return $self;
-    }
-
-    /**
-     * Filter by layer: house or poi.
-     */
-    public function withLayer(string $layer): self
-    {
-        $self = clone $this;
-        $self['layer'] = $layer;
-
-        return $self;
-    }
-
-    /**
-     * Maximum results (default 1, max 20).
-     */
-    public function withLimit(int $limit): self
+    public function withLimit(?int $limit): self
     {
         $self = clone $this;
         $self['limit'] = $limit;
@@ -169,31 +154,9 @@ final class GeocodeReverseParams implements BaseModel
     }
 
     /**
-     * Legacy shorthand. Longitude. Use near param instead.
+     * Search radius in meters (default: 100).
      */
-    public function withLng(float $lng): self
-    {
-        $self = clone $this;
-        $self['lng'] = $lng;
-
-        return $self;
-    }
-
-    /**
-     * Point geometry for reverse geocode (lat,lng or GeoJSON). Alternative to lat/lng params.
-     */
-    public function withNear(string $near): self
-    {
-        $self = clone $this;
-        $self['near'] = $near;
-
-        return $self;
-    }
-
-    /**
-     * Search radius in meters (default 200, max 5000).
-     */
-    public function withRadius(int $radius): self
+    public function withRadius(?float $radius): self
     {
         $self = clone $this;
         $self['radius'] = $radius;

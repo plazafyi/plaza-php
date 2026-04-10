@@ -7,12 +7,10 @@ namespace Plaza\Services;
 use Plaza\Client;
 use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
-use Plaza\Core\Util;
 use Plaza\Datasets\Dataset;
 use Plaza\Datasets\DatasetCreateParams;
-use Plaza\Datasets\DatasetFeaturesParams;
 use Plaza\Datasets\DatasetList;
-use Plaza\PlazaClientService\FeatureCollection;
+use Plaza\Datasets\DatasetListParams;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\DatasetsRawContract;
 
@@ -30,7 +28,7 @@ final class DatasetsRawService implements DatasetsRawContract
     /**
      * @api
      *
-     * Create a new dataset (admin only)
+     * Create a new dataset
      *
      * @param array{
      *   name: string,
@@ -39,6 +37,7 @@ final class DatasetsRawService implements DatasetsRawContract
      *   description?: string|null,
      *   license?: string|null,
      *   sourceURL?: string|null,
+     *   strictMode?: bool|null,
      * }|DatasetCreateParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -93,8 +92,9 @@ final class DatasetsRawService implements DatasetsRawContract
     /**
      * @api
      *
-     * List all datasets
+     * List datasets
      *
+     * @param array{scope?: string}|DatasetListParams $params
      * @param RequestOpts|null $requestOptions
      *
      * @return BaseResponse<DatasetList>
@@ -102,13 +102,20 @@ final class DatasetsRawService implements DatasetsRawContract
      * @throws APIException
      */
     public function list(
-        RequestOptions|array|null $requestOptions = null
+        array|DatasetListParams $params,
+        RequestOptions|array|null $requestOptions = null,
     ): BaseResponse {
+        [$parsed, $options] = DatasetListParams::parseRequest(
+            $params,
+            $requestOptions,
+        );
+
         // @phpstan-ignore-next-line return.type
         return $this->client->request(
             method: 'get',
             path: 'api/v1/datasets',
-            options: $requestOptions,
+            query: $parsed,
+            options: $options,
             convert: DatasetList::class,
         );
     }
@@ -135,63 +142,6 @@ final class DatasetsRawService implements DatasetsRawContract
             path: ['api/v1/datasets/%1$s', $id],
             options: $requestOptions,
             convert: null,
-        );
-    }
-
-    /**
-     * @api
-     *
-     * Query features in a dataset
-     *
-     * @param string $id Dataset ID
-     * @param array{
-     *   cursor?: string,
-     *   format?: string,
-     *   limit?: int,
-     *   outputBuffer?: float,
-     *   outputCentroid?: bool,
-     *   outputFields?: string,
-     *   outputGeometry?: bool,
-     *   outputInclude?: string,
-     *   outputPrecision?: int,
-     *   outputSimplify?: float,
-     *   outputSort?: string,
-     * }|DatasetFeaturesParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<FeatureCollection>
-     *
-     * @throws APIException
-     */
-    public function features(
-        string $id,
-        array|DatasetFeaturesParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse {
-        [$parsed, $options] = DatasetFeaturesParams::parseRequest(
-            $params,
-            $requestOptions,
-        );
-
-        // @phpstan-ignore-next-line return.type
-        return $this->client->request(
-            method: 'get',
-            path: ['api/v1/datasets/%1$s/features', $id],
-            query: Util::array_transform_keys(
-                $parsed,
-                [
-                    'outputBuffer' => 'output[buffer]',
-                    'outputCentroid' => 'output[centroid]',
-                    'outputFields' => 'output[fields]',
-                    'outputGeometry' => 'output[geometry]',
-                    'outputInclude' => 'output[include]',
-                    'outputPrecision' => 'output[precision]',
-                    'outputSimplify' => 'output[simplify]',
-                    'outputSort' => 'output[sort]',
-                ],
-            ),
-            options: $options,
-            convert: FeatureCollection::class,
         );
     }
 }

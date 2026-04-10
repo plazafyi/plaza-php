@@ -7,7 +7,6 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Plaza\Client;
 use Plaza\Core\Util;
-use Plaza\Elevation\ElevationBatchResult;
 use Plaza\Elevation\ElevationLookupResult;
 use Plaza\Elevation\ElevationProfileResult;
 
@@ -30,45 +29,23 @@ final class ElevationTest extends TestCase
     }
 
     #[Test]
-    public function testBatch(): void
-    {
-        $result = $this->client->elevation->batch(
-            coordinates: [
-                ['lat' => 48.8566, 'lng' => 2.3522], ['lat' => 45.764, 'lng' => 4.8357],
-            ],
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(ElevationBatchResult::class, $result);
-    }
-
-    #[Test]
-    public function testBatchWithOptionalParams(): void
-    {
-        $result = $this->client->elevation->batch(
-            coordinates: [
-                ['lat' => 48.8566, 'lng' => 2.3522], ['lat' => 45.764, 'lng' => 4.8357],
-            ],
-            format: 'format',
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(ElevationBatchResult::class, $result);
-    }
-
-    #[Test]
     public function testLookup(): void
     {
-        $result = $this->client->elevation->lookup();
+        $result = $this->client->elevation->lookup(
+            geometry: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point']
+        );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(ElevationLookupResult::class, $result);
     }
 
     #[Test]
-    public function testLookupPost(): void
+    public function testLookupWithOptionalParams(): void
     {
-        $result = $this->client->elevation->lookupPost();
+        $result = $this->client->elevation->lookup(
+            geometry: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
+            format: 'format',
+        );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(ElevationLookupResult::class, $result);
@@ -78,10 +55,9 @@ final class ElevationTest extends TestCase
     public function testProfile(): void
     {
         $result = $this->client->elevation->profile(
-            coordinates: [
-                ['lat' => 48.8566, 'lng' => 2.3522],
-                ['lat' => 48.858, 'lng' => 2.34],
-                ['lat' => 48.8584, 'lng' => 2.2945],
+            geometry: [
+                'coordinates' => [[2.3522, 48.8566], [2.34, 48.858], [2.2945, 48.8584]],
+                'type' => 'LineString',
             ],
         );
 
@@ -93,10 +69,9 @@ final class ElevationTest extends TestCase
     public function testProfileWithOptionalParams(): void
     {
         $result = $this->client->elevation->profile(
-            coordinates: [
-                ['lat' => 48.8566, 'lng' => 2.3522],
-                ['lat' => 48.858, 'lng' => 2.34],
-                ['lat' => 48.8584, 'lng' => 2.2945],
+            geometry: [
+                'coordinates' => [[2.3522, 48.8566], [2.34, 48.858], [2.2945, 48.8584]],
+                'type' => 'LineString',
             ],
         );
 

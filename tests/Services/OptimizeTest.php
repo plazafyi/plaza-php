@@ -32,9 +32,10 @@ final class OptimizeTest extends TestCase
     {
         $result = $this->client->optimize->create(
             waypoints: [
-                ['lat' => 48.8566, 'lng' => 2.3522],
-                ['lat' => 48.8606, 'lng' => 2.3376],
-                ['lat' => 48.8584, 'lng' => 2.2945],
+                'coordinates' => [
+                    [2.3522, 48.8566], [2.3376, 48.8606], [2.2945, 48.8584],
+                ],
+                'type' => 'MultiPoint',
             ],
         );
 
@@ -47,9 +48,10 @@ final class OptimizeTest extends TestCase
     {
         $result = $this->client->optimize->create(
             waypoints: [
-                ['lat' => 48.8566, 'lng' => 2.3522],
-                ['lat' => 48.8606, 'lng' => 2.3376],
-                ['lat' => 48.8584, 'lng' => 2.2945],
+                'coordinates' => [
+                    [2.3522, 48.8566], [2.3376, 48.8606], [2.2945, 48.8584],
+                ],
+                'type' => 'MultiPoint',
             ],
             format: 'format',
             mode: 'auto',

@@ -9,8 +9,8 @@ use Http\Discovery\Psr18ClientDiscovery;
 use Plaza\Core\BaseClient;
 use Plaza\Core\Util;
 use Plaza\Services\DatasetsService;
-use Plaza\Services\ElementsService;
 use Plaza\Services\ElevationService;
+use Plaza\Services\FeaturesService;
 use Plaza\Services\GeocodeService;
 use Plaza\Services\MapMatchService;
 use Plaza\Services\OptimizeService;
@@ -30,7 +30,7 @@ class Client extends BaseClient
     /**
      * @api
      */
-    public ElementsService $elements;
+    public FeaturesService $features;
 
     /**
      * @api
@@ -115,7 +115,7 @@ class Client extends BaseClient
             options: $options
         );
 
-        $this->elements = new ElementsService($this);
+        $this->features = new FeaturesService($this);
         $this->datasets = new DatasetsService($this);
         $this->geocode = new GeocodeService($this);
         $this->search = new SearchService($this);

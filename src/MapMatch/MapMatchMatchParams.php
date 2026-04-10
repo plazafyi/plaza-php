@@ -9,17 +9,18 @@ use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\MapMatch\MapMatchMatchParams\Coordinate;
+use Plaza\PlazaClientService\LineStringGeometry;
 
 /**
  * Match GPS coordinates to the road network.
  *
  * @see Plaza\Services\MapMatchService::match()
  *
- * @phpstan-import-type CoordinateShape from \Plaza\MapMatch\MapMatchMatchParams\Coordinate
+ * @phpstan-import-type LineStringGeometryShape from \Plaza\PlazaClientService\LineStringGeometry
  *
  * @phpstan-type MapMatchMatchParamsShape = array{
- *   coordinates: list<Coordinate|CoordinateShape>, radiuses?: list<float>|null
+ *   geometry: LineStringGeometry|LineStringGeometryShape,
+ *   radiuses?: list<float>|null,
  * }
  */
 final class MapMatchMatchParams implements BaseModel
@@ -29,15 +30,13 @@ final class MapMatchMatchParams implements BaseModel
     use SdkParams;
 
     /**
-     * GPS coordinates to match, in order of travel (max 50 points).
-     *
-     * @var list<Coordinate> $coordinates
+     * GeoJSON LineString geometry per RFC 7946. An ordered sequence of two or more positions.
      */
-    #[Required(list: Coordinate::class)]
-    public array $coordinates;
+    #[Required]
+    public LineStringGeometry $geometry;
 
     /**
-     * Search radius per coordinate in meters. Must have the same length as `coordinates` or be omitted entirely. Default: 50m per point.
+     * Search radius per coordinate in meters. Must have the same length as the geometry coordinates or be omitted entirely. Default: 50m per point.
      *
      * @var list<float>|null $radiuses
      */
@@ -49,13 +48,13 @@ final class MapMatchMatchParams implements BaseModel
      *
      * To enforce required parameters use
      * ```
-     * MapMatchMatchParams::with(coordinates: ...)
+     * MapMatchMatchParams::with(geometry: ...)
      * ```
      *
      * Otherwise ensure the following setters are called
      *
      * ```
-     * (new MapMatchMatchParams)->withCoordinates(...)
+     * (new MapMatchMatchParams)->withGeometry(...)
      * ```
      */
     public function __construct()
@@ -68,16 +67,16 @@ final class MapMatchMatchParams implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param list<Coordinate|CoordinateShape> $coordinates
+     * @param LineStringGeometry|LineStringGeometryShape $geometry
      * @param list<float>|null $radiuses
      */
     public static function with(
-        array $coordinates,
+        LineStringGeometry|array $geometry,
         ?array $radiuses = null
     ): self {
         $self = new self;
 
-        $self['coordinates'] = $coordinates;
+        $self['geometry'] = $geometry;
 
         null !== $radiuses && $self['radiuses'] = $radiuses;
 
@@ -85,20 +84,20 @@ final class MapMatchMatchParams implements BaseModel
     }
 
     /**
-     * GPS coordinates to match, in order of travel (max 50 points).
+     * GeoJSON LineString geometry per RFC 7946. An ordered sequence of two or more positions.
      *
-     * @param list<Coordinate|CoordinateShape> $coordinates
+     * @param LineStringGeometry|LineStringGeometryShape $geometry
      */
-    public function withCoordinates(array $coordinates): self
+    public function withGeometry(LineStringGeometry|array $geometry): self
     {
         $self = clone $this;
-        $self['coordinates'] = $coordinates;
+        $self['geometry'] = $geometry;
 
         return $self;
     }
 
     /**
-     * Search radius per coordinate in meters. Must have the same length as `coordinates` or be omitted entirely. Default: 50m per point.
+     * Search radius per coordinate in meters. Must have the same length as the geometry coordinates or be omitted entirely. Default: 50m per point.
      *
      * @param list<float>|null $radiuses
      */
