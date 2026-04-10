@@ -8,13 +8,13 @@ use Plaza\Client;
 use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\MapMatch\MapMatchMatchParams;
-use Plaza\MapMatch\MapMatchMatchParams\Coordinate;
 use Plaza\MapMatch\MapMatchResult;
+use Plaza\PlazaClientService\LineStringGeometry;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\MapMatchRawContract;
 
 /**
- * @phpstan-import-type CoordinateShape from \Plaza\MapMatch\MapMatchMatchParams\Coordinate
+ * @phpstan-import-type LineStringGeometryShape from \Plaza\PlazaClientService\LineStringGeometry
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 final class MapMatchRawService implements MapMatchRawContract
@@ -31,7 +31,8 @@ final class MapMatchRawService implements MapMatchRawContract
      * Match GPS coordinates to the road network
      *
      * @param array{
-     *   coordinates: list<Coordinate|CoordinateShape>, radiuses?: list<float>|null
+     *   geometry: LineStringGeometry|LineStringGeometryShape,
+     *   radiuses?: list<float>|null,
      * }|MapMatchMatchParams $params
      * @param RequestOpts|null $requestOptions
      *

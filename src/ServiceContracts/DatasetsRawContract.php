@@ -8,9 +8,8 @@ use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\Datasets\Dataset;
 use Plaza\Datasets\DatasetCreateParams;
-use Plaza\Datasets\DatasetFeaturesParams;
 use Plaza\Datasets\DatasetList;
-use Plaza\PlazaClientService\FeatureCollection;
+use Plaza\Datasets\DatasetListParams;
 use Plaza\RequestOptions;
 
 /**
@@ -51,6 +50,7 @@ interface DatasetsRawContract
     /**
      * @api
      *
+     * @param array<string,mixed>|DatasetListParams $params
      * @param RequestOpts|null $requestOptions
      *
      * @return BaseResponse<DatasetList>
@@ -58,7 +58,8 @@ interface DatasetsRawContract
      * @throws APIException
      */
     public function list(
-        RequestOptions|array|null $requestOptions = null
+        array|DatasetListParams $params,
+        RequestOptions|array|null $requestOptions = null,
     ): BaseResponse;
 
     /**
@@ -74,22 +75,5 @@ interface DatasetsRawContract
     public function delete(
         string $id,
         RequestOptions|array|null $requestOptions = null
-    ): BaseResponse;
-
-    /**
-     * @api
-     *
-     * @param string $id Dataset ID
-     * @param array<string,mixed>|DatasetFeaturesParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<FeatureCollection>
-     *
-     * @throws APIException
-     */
-    public function features(
-        string $id,
-        array|DatasetFeaturesParams $params,
-        RequestOptions|array|null $requestOptions = null,
     ): BaseResponse;
 }

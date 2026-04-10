@@ -9,7 +9,6 @@ use Plaza\Client;
 use Plaza\Core\Util;
 use Plaza\Routing\NearestResult;
 use Plaza\Routing\RouteResult;
-use Plaza\Routing\RoutingIsochronePostResponse;
 use Plaza\Routing\RoutingIsochroneResponse;
 
 /**
@@ -33,7 +32,10 @@ final class RoutingTest extends TestCase
     #[Test]
     public function testIsochrone(): void
     {
-        $result = $this->client->routing->isochrone(lat: 0, lng: 0, time: 0);
+        $result = $this->client->routing->isochrone(
+            geometry: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
+            time: [1],
+        );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(RoutingIsochroneResponse::class, $result);
@@ -43,16 +45,10 @@ final class RoutingTest extends TestCase
     public function testIsochroneWithOptionalParams(): void
     {
         $result = $this->client->routing->isochrone(
-            lat: 0,
-            lng: 0,
-            time: 0,
+            geometry: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
+            time: [1],
             format: 'format',
-            mode: 'mode',
-            outputFields: 'output[fields]',
-            outputGeometry: true,
-            outputInclude: 'output[include]',
-            outputPrecision: 0,
-            outputSimplify: 0,
+            mode: 'auto',
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -60,41 +56,13 @@ final class RoutingTest extends TestCase
     }
 
     #[Test]
-    public function testIsochronePost(): void
-    {
-        $result = $this->client->routing->isochronePost(lat: 0, lng: 0, time: 0);
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(RoutingIsochronePostResponse::class, $result);
-    }
-
-    #[Test]
-    public function testIsochronePostWithOptionalParams(): void
-    {
-        $result = $this->client->routing->isochronePost(
-            lat: 0,
-            lng: 0,
-            time: 0,
-            format: 'format',
-            mode: 'mode',
-            outputFields: 'output[fields]',
-            outputGeometry: true,
-            outputInclude: 'output[include]',
-            outputPrecision: 0,
-            outputSimplify: 0,
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(RoutingIsochronePostResponse::class, $result);
-    }
-
-    #[Test]
     public function testMatrix(): void
     {
         $result = $this->client->routing->matrix(
-            destinations: [['lat' => 48.8584, 'lng' => 2.2945]],
+            destinations: [['coordinates' => [2.2945, 48.8584], 'type' => 'Point']],
             origins: [
-                ['lat' => 48.8566, 'lng' => 2.3522], ['lat' => 48.8606, 'lng' => 2.3376],
+                ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
+                ['coordinates' => [2.3376, 48.8606], 'type' => 'Point'],
             ],
         );
 
@@ -106,9 +74,10 @@ final class RoutingTest extends TestCase
     public function testMatrixWithOptionalParams(): void
     {
         $result = $this->client->routing->matrix(
-            destinations: [['lat' => 48.8584, 'lng' => 2.2945]],
+            destinations: [['coordinates' => [2.2945, 48.8584], 'type' => 'Point']],
             origins: [
-                ['lat' => 48.8566, 'lng' => 2.3522], ['lat' => 48.8606, 'lng' => 2.3376],
+                ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
+                ['coordinates' => [2.3376, 48.8606], 'type' => 'Point'],
             ],
             annotations: 'annotations',
             fallbackSpeed: 1,
@@ -122,7 +91,9 @@ final class RoutingTest extends TestCase
     #[Test]
     public function testNearest(): void
     {
-        $result = $this->client->routing->nearest(lat: 0, lng: 0);
+        $result = $this->client->routing->nearest(
+            geometry: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point']
+        );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(NearestResult::class, $result);
@@ -132,37 +103,8 @@ final class RoutingTest extends TestCase
     public function testNearestWithOptionalParams(): void
     {
         $result = $this->client->routing->nearest(
-            lat: 0,
-            lng: 0,
-            outputFields: 'output[fields]',
-            outputInclude: 'output[include]',
-            outputPrecision: 0,
-            radius: 0,
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(NearestResult::class, $result);
-    }
-
-    #[Test]
-    public function testNearestPost(): void
-    {
-        $result = $this->client->routing->nearestPost(lat: 0, lng: 0);
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(NearestResult::class, $result);
-    }
-
-    #[Test]
-    public function testNearestPostWithOptionalParams(): void
-    {
-        $result = $this->client->routing->nearestPost(
-            lat: 0,
-            lng: 0,
-            outputFields: 'output[fields]',
-            outputInclude: 'output[include]',
-            outputPrecision: 0,
-            radius: 0,
+            geometry: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
+            radius: 1,
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -173,8 +115,8 @@ final class RoutingTest extends TestCase
     public function testRoute(): void
     {
         $result = $this->client->routing->route(
-            destination: ['lat' => 48.8584, 'lng' => 2.2945],
-            origin: ['lat' => 48.8566, 'lng' => 2.3522],
+            destination: ['coordinates' => [2.2945, 48.8584], 'type' => 'Point'],
+            origin: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -185,8 +127,8 @@ final class RoutingTest extends TestCase
     public function testRouteWithOptionalParams(): void
     {
         $result = $this->client->routing->route(
-            destination: ['lat' => 48.8584, 'lng' => 2.2945],
-            origin: ['lat' => 48.8566, 'lng' => 2.3522],
+            destination: ['coordinates' => [2.2945, 48.8584], 'type' => 'Point'],
+            origin: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
             format: 'format',
             alternatives: 0,
             annotations: true,
@@ -204,7 +146,7 @@ final class RoutingTest extends TestCase
             overview: 'full',
             steps: true,
             trafficModel: 'best_guess',
-            waypoints: [['lat' => 48.8566, 'lng' => 2.3522]],
+            waypoints: [['coordinates' => [2.3522, 48.8566], 'type' => 'Point']],
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType

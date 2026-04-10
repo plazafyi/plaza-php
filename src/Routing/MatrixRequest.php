@@ -8,19 +8,17 @@ use Plaza\Core\Attributes\Optional;
 use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\Routing\MatrixRequest\Destination;
+use Plaza\PlazaClientService\PointGeometry;
 use Plaza\Routing\MatrixRequest\Mode;
-use Plaza\Routing\MatrixRequest\Origin;
 
 /**
  * Request body for distance matrix calculation. Computes travel durations (and optionally distances) between every origin-destination pair. Maximum 2,500 pairs (origins × destinations), each list capped at 50 coordinates.
  *
- * @phpstan-import-type DestinationShape from \Plaza\Routing\MatrixRequest\Destination
- * @phpstan-import-type OriginShape from \Plaza\Routing\MatrixRequest\Origin
+ * @phpstan-import-type PointGeometryShape from \Plaza\PlazaClientService\PointGeometry
  *
  * @phpstan-type MatrixRequestShape = array{
- *   destinations: list<Destination|DestinationShape>,
- *   origins: list<Origin|OriginShape>,
+ *   destinations: list<PointGeometry|PointGeometryShape>,
+ *   origins: list<PointGeometry|PointGeometryShape>,
  *   annotations?: string|null,
  *   fallbackSpeed?: float|null,
  *   mode?: null|Mode|value-of<Mode>,
@@ -32,19 +30,19 @@ final class MatrixRequest implements BaseModel
     use SdkModel;
 
     /**
-     * Array of destination coordinates (max 50).
+     * Array of destination coordinates as GeoJSON Points (max 50).
      *
-     * @var list<Destination> $destinations
+     * @var list<PointGeometry> $destinations
      */
-    #[Required(list: Destination::class)]
+    #[Required(list: PointGeometry::class)]
     public array $destinations;
 
     /**
-     * Array of origin coordinates (max 50).
+     * Array of origin coordinates as GeoJSON Points (max 50).
      *
-     * @var list<Origin> $origins
+     * @var list<PointGeometry> $origins
      */
-    #[Required(list: Origin::class)]
+    #[Required(list: PointGeometry::class)]
     public array $origins;
 
     /**
@@ -91,8 +89,8 @@ final class MatrixRequest implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param list<Destination|DestinationShape> $destinations
-     * @param list<Origin|OriginShape> $origins
+     * @param list<PointGeometry|PointGeometryShape> $destinations
+     * @param list<PointGeometry|PointGeometryShape> $origins
      * @param Mode|value-of<Mode>|null $mode
      */
     public static function with(
@@ -115,9 +113,9 @@ final class MatrixRequest implements BaseModel
     }
 
     /**
-     * Array of destination coordinates (max 50).
+     * Array of destination coordinates as GeoJSON Points (max 50).
      *
-     * @param list<Destination|DestinationShape> $destinations
+     * @param list<PointGeometry|PointGeometryShape> $destinations
      */
     public function withDestinations(array $destinations): self
     {
@@ -128,9 +126,9 @@ final class MatrixRequest implements BaseModel
     }
 
     /**
-     * Array of origin coordinates (max 50).
+     * Array of origin coordinates as GeoJSON Points (max 50).
      *
-     * @param list<Origin|OriginShape> $origins
+     * @param list<PointGeometry|PointGeometryShape> $origins
      */
     public function withOrigins(array $origins): self
     {

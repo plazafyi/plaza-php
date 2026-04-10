@@ -7,22 +7,20 @@ namespace Plaza\Services;
 use Plaza\Client;
 use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
-use Plaza\Core\Util;
 use Plaza\Geocode\AutocompleteResult;
 use Plaza\Geocode\GeocodeAutocompleteParams;
-use Plaza\Geocode\GeocodeAutocompletePostParams;
 use Plaza\Geocode\GeocodeBatchParams;
 use Plaza\Geocode\GeocodeBatchResponse;
 use Plaza\Geocode\GeocodeForwardParams;
-use Plaza\Geocode\GeocodeForwardPostParams;
 use Plaza\Geocode\GeocodeResult;
 use Plaza\Geocode\GeocodeReverseParams;
-use Plaza\Geocode\GeocodeReversePostParams;
 use Plaza\Geocode\ReverseGeocodeResult;
+use Plaza\PlazaClientService\PointGeometry;
 use Plaza\RequestOptions;
 use Plaza\ServiceContracts\GeocodeRawContract;
 
 /**
+ * @phpstan-import-type PointGeometryShape from \Plaza\PlazaClientService\PointGeometry
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 final class GeocodeRawService implements GeocodeRawContract
@@ -40,13 +38,12 @@ final class GeocodeRawService implements GeocodeRawContract
      *
      * @param array{
      *   q: string,
-     *   countryCode?: string,
      *   format?: string,
-     *   lang?: string,
-     *   lat?: float,
-     *   layer?: string,
-     *   limit?: int,
-     *   lng?: float,
+     *   countryCode?: string|null,
+     *   focus?: PointGeometry|PointGeometryShape|null,
+     *   lang?: string|null,
+     *   layer?: string|null,
+     *   limit?: int|null,
      * }|GeocodeAutocompleteParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -62,58 +59,14 @@ final class GeocodeRawService implements GeocodeRawContract
             $params,
             $requestOptions,
         );
-
-        // @phpstan-ignore-next-line return.type
-        return $this->client->request(
-            method: 'get',
-            path: 'api/v1/geocode/autocomplete',
-            query: Util::array_transform_keys(
-                $parsed,
-                ['countryCode' => 'country_code']
-            ),
-            options: $options,
-            convert: AutocompleteResult::class,
-        );
-    }
-
-    /**
-     * @api
-     *
-     * Autocomplete a partial address
-     *
-     * @param array{
-     *   q: string,
-     *   countryCode?: string,
-     *   format?: string,
-     *   lang?: string,
-     *   lat?: float,
-     *   layer?: string,
-     *   limit?: int,
-     *   lng?: float,
-     * }|GeocodeAutocompletePostParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<AutocompleteResult>
-     *
-     * @throws APIException
-     */
-    public function autocompletePost(
-        array|GeocodeAutocompletePostParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse {
-        [$parsed, $options] = GeocodeAutocompletePostParams::parseRequest(
-            $params,
-            $requestOptions,
-        );
+        $query_params = array_flip(['format']);
 
         // @phpstan-ignore-next-line return.type
         return $this->client->request(
             method: 'post',
             path: 'api/v1/geocode/autocomplete',
-            query: Util::array_transform_keys(
-                $parsed,
-                ['countryCode' => 'country_code']
-            ),
+            query: array_intersect_key($parsed, $query_params),
+            body: (object) array_diff_key($parsed, $query_params),
             options: $options,
             convert: AutocompleteResult::class,
         );
@@ -157,14 +110,12 @@ final class GeocodeRawService implements GeocodeRawContract
      *
      * @param array{
      *   q: string,
-     *   bbox?: string,
-     *   countryCode?: string,
      *   format?: string,
-     *   lang?: string,
-     *   lat?: float,
-     *   layer?: string,
-     *   limit?: int,
-     *   lng?: float,
+     *   countryCode?: string|null,
+     *   focus?: PointGeometry|PointGeometryShape|null,
+     *   lang?: string|null,
+     *   layer?: string|null,
+     *   limit?: int|null,
      * }|GeocodeForwardParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -180,59 +131,14 @@ final class GeocodeRawService implements GeocodeRawContract
             $params,
             $requestOptions,
         );
-
-        // @phpstan-ignore-next-line return.type
-        return $this->client->request(
-            method: 'get',
-            path: 'api/v1/geocode',
-            query: Util::array_transform_keys(
-                $parsed,
-                ['countryCode' => 'country_code']
-            ),
-            options: $options,
-            convert: GeocodeResult::class,
-        );
-    }
-
-    /**
-     * @api
-     *
-     * Forward geocode an address
-     *
-     * @param array{
-     *   q: string,
-     *   bbox?: string,
-     *   countryCode?: string,
-     *   format?: string,
-     *   lang?: string,
-     *   lat?: float,
-     *   layer?: string,
-     *   limit?: int,
-     *   lng?: float,
-     * }|GeocodeForwardPostParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<GeocodeResult>
-     *
-     * @throws APIException
-     */
-    public function forwardPost(
-        array|GeocodeForwardPostParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse {
-        [$parsed, $options] = GeocodeForwardPostParams::parseRequest(
-            $params,
-            $requestOptions,
-        );
+        $query_params = array_flip(['format']);
 
         // @phpstan-ignore-next-line return.type
         return $this->client->request(
             method: 'post',
             path: 'api/v1/geocode',
-            query: Util::array_transform_keys(
-                $parsed,
-                ['countryCode' => 'country_code']
-            ),
+            query: array_intersect_key($parsed, $query_params),
+            body: (object) array_diff_key($parsed, $query_params),
             options: $options,
             convert: GeocodeResult::class,
         );
@@ -244,14 +150,11 @@ final class GeocodeRawService implements GeocodeRawContract
      * Reverse geocode a coordinate
      *
      * @param array{
+     *   geometry: PointGeometry|PointGeometryShape,
      *   format?: string,
-     *   lang?: string,
-     *   lat?: float,
-     *   layer?: string,
-     *   limit?: int,
-     *   lng?: float,
-     *   near?: string,
-     *   radius?: int,
+     *   lang?: string|null,
+     *   limit?: int|null,
+     *   radius?: float|null,
      * }|GeocodeReverseParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -267,52 +170,14 @@ final class GeocodeRawService implements GeocodeRawContract
             $params,
             $requestOptions,
         );
-
-        // @phpstan-ignore-next-line return.type
-        return $this->client->request(
-            method: 'get',
-            path: 'api/v1/geocode/reverse',
-            query: $parsed,
-            options: $options,
-            convert: ReverseGeocodeResult::class,
-        );
-    }
-
-    /**
-     * @api
-     *
-     * Reverse geocode a coordinate
-     *
-     * @param array{
-     *   format?: string,
-     *   lang?: string,
-     *   lat?: float,
-     *   layer?: string,
-     *   limit?: int,
-     *   lng?: float,
-     *   near?: string,
-     *   radius?: int,
-     * }|GeocodeReversePostParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<ReverseGeocodeResult>
-     *
-     * @throws APIException
-     */
-    public function reversePost(
-        array|GeocodeReversePostParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse {
-        [$parsed, $options] = GeocodeReversePostParams::parseRequest(
-            $params,
-            $requestOptions,
-        );
+        $query_params = array_flip(['format']);
 
         // @phpstan-ignore-next-line return.type
         return $this->client->request(
             method: 'post',
             path: 'api/v1/geocode/reverse',
-            query: $parsed,
+            query: array_intersect_key($parsed, $query_params),
+            body: (object) array_diff_key($parsed, $query_params),
             options: $options,
             convert: ReverseGeocodeResult::class,
         );

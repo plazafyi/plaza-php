@@ -9,23 +9,21 @@ use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
+use Plaza\PlazaClientService\PointGeometry;
+use Plaza\Routing\RoutingIsochroneParams\Mode;
 
 /**
  * Calculate an isochrone from a point.
  *
  * @see Plaza\Services\RoutingService::isochrone()
  *
+ * @phpstan-import-type PointGeometryShape from \Plaza\PlazaClientService\PointGeometry
+ *
  * @phpstan-type RoutingIsochroneParamsShape = array{
- *   lat: float,
- *   lng: float,
- *   time: float,
+ *   geometry: PointGeometry|PointGeometryShape,
+ *   time: list<int>,
  *   format?: string|null,
- *   mode?: string|null,
- *   outputFields?: string|null,
- *   outputGeometry?: bool|null,
- *   outputInclude?: string|null,
- *   outputPrecision?: int|null,
- *   outputSimplify?: float|null,
+ *   mode?: null|Mode|value-of<Mode>,
  * }
  */
 final class RoutingIsochroneParams implements BaseModel
@@ -35,22 +33,18 @@ final class RoutingIsochroneParams implements BaseModel
     use SdkParams;
 
     /**
-     * Latitude.
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
      */
     #[Required]
-    public float $lat;
+    public PointGeometry $geometry;
 
     /**
-     * Longitude.
+     * Travel time budgets in seconds. Each value produces one contour polygon.
+     *
+     * @var list<int> $time
      */
-    #[Required]
-    public float $lng;
-
-    /**
-     * Travel time in seconds (1-7200).
-     */
-    #[Required]
-    public float $time;
+    #[Required(list: 'int')]
+    public array $time;
 
     /**
      * Response format: json (default), geojson, csv, ndjson.
@@ -59,53 +53,25 @@ final class RoutingIsochroneParams implements BaseModel
     public ?string $format;
 
     /**
-     * Travel mode (auto, foot, bicycle).
+     * Travel mode (default: `auto`).
+     *
+     * @var value-of<Mode>|null $mode
      */
-    #[Optional]
+    #[Optional(enum: Mode::class)]
     public ?string $mode;
-
-    /**
-     * Comma-separated property fields to include.
-     */
-    #[Optional]
-    public ?string $outputFields;
-
-    /**
-     * Include geometry (default true).
-     */
-    #[Optional]
-    public ?bool $outputGeometry;
-
-    /**
-     * Extra computed fields: bbox, center.
-     */
-    #[Optional]
-    public ?string $outputInclude;
-
-    /**
-     * Coordinate decimal precision (1-15, default 7).
-     */
-    #[Optional]
-    public ?int $outputPrecision;
-
-    /**
-     * Simplify geometry tolerance in meters.
-     */
-    #[Optional]
-    public ?float $outputSimplify;
 
     /**
      * `new RoutingIsochroneParams()` is missing required properties by the API.
      *
      * To enforce required parameters use
      * ```
-     * RoutingIsochroneParams::with(lat: ..., lng: ..., time: ...)
+     * RoutingIsochroneParams::with(geometry: ..., time: ...)
      * ```
      *
      * Otherwise ensure the following setters are called
      *
      * ```
-     * (new RoutingIsochroneParams)->withLat(...)->withLng(...)->withTime(...)
+     * (new RoutingIsochroneParams)->withGeometry(...)->withTime(...)
      * ```
      */
     public function __construct()
@@ -117,62 +83,47 @@ final class RoutingIsochroneParams implements BaseModel
      * Construct an instance from the required parameters.
      *
      * You must use named parameters to construct any parameters with a default value.
+     *
+     * @param PointGeometry|PointGeometryShape $geometry
+     * @param list<int> $time
+     * @param Mode|value-of<Mode>|null $mode
      */
     public static function with(
-        float $lat,
-        float $lng,
-        float $time,
+        PointGeometry|array $geometry,
+        array $time,
         ?string $format = null,
-        ?string $mode = null,
-        ?string $outputFields = null,
-        ?bool $outputGeometry = null,
-        ?string $outputInclude = null,
-        ?int $outputPrecision = null,
-        ?float $outputSimplify = null,
+        Mode|string|null $mode = null,
     ): self {
         $self = new self;
 
-        $self['lat'] = $lat;
-        $self['lng'] = $lng;
+        $self['geometry'] = $geometry;
         $self['time'] = $time;
 
         null !== $format && $self['format'] = $format;
         null !== $mode && $self['mode'] = $mode;
-        null !== $outputFields && $self['outputFields'] = $outputFields;
-        null !== $outputGeometry && $self['outputGeometry'] = $outputGeometry;
-        null !== $outputInclude && $self['outputInclude'] = $outputInclude;
-        null !== $outputPrecision && $self['outputPrecision'] = $outputPrecision;
-        null !== $outputSimplify && $self['outputSimplify'] = $outputSimplify;
 
         return $self;
     }
 
     /**
-     * Latitude.
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
+     *
+     * @param PointGeometry|PointGeometryShape $geometry
      */
-    public function withLat(float $lat): self
+    public function withGeometry(PointGeometry|array $geometry): self
     {
         $self = clone $this;
-        $self['lat'] = $lat;
+        $self['geometry'] = $geometry;
 
         return $self;
     }
 
     /**
-     * Longitude.
+     * Travel time budgets in seconds. Each value produces one contour polygon.
+     *
+     * @param list<int> $time
      */
-    public function withLng(float $lng): self
-    {
-        $self = clone $this;
-        $self['lng'] = $lng;
-
-        return $self;
-    }
-
-    /**
-     * Travel time in seconds (1-7200).
-     */
-    public function withTime(float $time): self
+    public function withTime(array $time): self
     {
         $self = clone $this;
         $self['time'] = $time;
@@ -192,67 +143,14 @@ final class RoutingIsochroneParams implements BaseModel
     }
 
     /**
-     * Travel mode (auto, foot, bicycle).
+     * Travel mode (default: `auto`).
+     *
+     * @param Mode|value-of<Mode> $mode
      */
-    public function withMode(string $mode): self
+    public function withMode(Mode|string $mode): self
     {
         $self = clone $this;
         $self['mode'] = $mode;
-
-        return $self;
-    }
-
-    /**
-     * Comma-separated property fields to include.
-     */
-    public function withOutputFields(string $outputFields): self
-    {
-        $self = clone $this;
-        $self['outputFields'] = $outputFields;
-
-        return $self;
-    }
-
-    /**
-     * Include geometry (default true).
-     */
-    public function withOutputGeometry(bool $outputGeometry): self
-    {
-        $self = clone $this;
-        $self['outputGeometry'] = $outputGeometry;
-
-        return $self;
-    }
-
-    /**
-     * Extra computed fields: bbox, center.
-     */
-    public function withOutputInclude(string $outputInclude): self
-    {
-        $self = clone $this;
-        $self['outputInclude'] = $outputInclude;
-
-        return $self;
-    }
-
-    /**
-     * Coordinate decimal precision (1-15, default 7).
-     */
-    public function withOutputPrecision(int $outputPrecision): self
-    {
-        $self = clone $this;
-        $self['outputPrecision'] = $outputPrecision;
-
-        return $self;
-    }
-
-    /**
-     * Simplify geometry tolerance in meters.
-     */
-    public function withOutputSimplify(float $outputSimplify): self
-    {
-        $self = clone $this;
-        $self['outputSimplify'] = $outputSimplify;
 
         return $self;
     }

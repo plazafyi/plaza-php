@@ -32,8 +32,8 @@ $client = new Client(
   apiKey: getenv('PLAZA_API_KEY') ?: 'My API Key', environment: 'local'
 );
 
-$featureCollection = $client->elements->query(
-  near: '48.8584,2.2945', radius: 500
+$featureCollection = $client->features->query(
+  around: ['type' => 'Point', 'coordinates' => [2.2945, 48.8584]], radius: 500
 );
 
 var_dump($featureCollection->features);
@@ -41,10 +41,10 @@ var_dump($featureCollection->features);
 
 ### Value Objects
 
-It is recommended to use the static `with` constructor `Dog::with(name: "Joey")`
+It is recommended to use the static `with` constructor `LineStringGeometry::with(coordinates: [[0, 0], [0, 0]], ...)`
 and named parameters to initialize value objects.
 
-However, builders are also provided `(new Dog)->withName("Joey")`.
+However, builders are also provided `(new LineStringGeometry)->withCoordinates([[0, 0], [0, 0]])`.
 
 ### Handling errors
 
@@ -58,7 +58,7 @@ use Plaza\Core\Exceptions\RateLimitException;
 use Plaza\Core\Exceptions\APIStatusException;
 
 try {
-  $featureCollection = $client->elements->query();
+  $featureCollection = $client->features->query();
 } catch (APIConnectionException $e) {
   echo "The server could not be reached", PHP_EOL;
   var_dump($e->getPrevious());
@@ -103,8 +103,10 @@ use Plaza\Client;
 $client = new Client(requestOptions: ['maxRetries' => 0]);
 
 // Or, configure per-request:
-$result = $client->elements->query(
-  near: '48.8584,2.2945', radius: 500, requestOptions: ['maxRetries' => 5]
+$result = $client->features->query(
+  around: ['type' => 'Point', 'coordinates' => [2.2945, 48.8584]],
+  radius: 500,
+  requestOptions: ['maxRetries' => 5],
 );
 ```
 
@@ -121,8 +123,8 @@ Note: the `extra*` parameters of the same name overrides the documented paramete
 ```php
 <?php
 
-$featureCollection = $client->elements->query(
-  near: '48.8584,2.2945',
+$featureCollection = $client->features->query(
+  around: ['type' => 'Point', 'coordinates' => [2.2945, 48.8584]],
   radius: 500,
   requestOptions: [
     'extraQueryParams' => ['my_query_parameter' => 'value'],

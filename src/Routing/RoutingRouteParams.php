@@ -9,28 +9,24 @@ use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
-use Plaza\Routing\RoutingRouteParams\Destination;
+use Plaza\PlazaClientService\PointGeometry;
 use Plaza\Routing\RoutingRouteParams\Ev;
 use Plaza\Routing\RoutingRouteParams\Geometries;
 use Plaza\Routing\RoutingRouteParams\Mode;
-use Plaza\Routing\RoutingRouteParams\Origin;
 use Plaza\Routing\RoutingRouteParams\Overview;
 use Plaza\Routing\RoutingRouteParams\TrafficModel;
-use Plaza\Routing\RoutingRouteParams\Waypoint;
 
 /**
  * Calculate a route between two points.
  *
  * @see Plaza\Services\RoutingService::route()
  *
- * @phpstan-import-type DestinationShape from \Plaza\Routing\RoutingRouteParams\Destination
- * @phpstan-import-type OriginShape from \Plaza\Routing\RoutingRouteParams\Origin
+ * @phpstan-import-type PointGeometryShape from \Plaza\PlazaClientService\PointGeometry
  * @phpstan-import-type EvShape from \Plaza\Routing\RoutingRouteParams\Ev
- * @phpstan-import-type WaypointShape from \Plaza\Routing\RoutingRouteParams\Waypoint
  *
  * @phpstan-type RoutingRouteParamsShape = array{
- *   destination: Destination|DestinationShape,
- *   origin: Origin|OriginShape,
+ *   destination: PointGeometry|PointGeometryShape,
+ *   origin: PointGeometry|PointGeometryShape,
  *   format?: string|null,
  *   alternatives?: int|null,
  *   annotations?: bool|null,
@@ -42,7 +38,7 @@ use Plaza\Routing\RoutingRouteParams\Waypoint;
  *   overview?: null|Overview|value-of<Overview>,
  *   steps?: bool|null,
  *   trafficModel?: null|TrafficModel|value-of<TrafficModel>,
- *   waypoints?: list<Waypoint|WaypointShape>|null,
+ *   waypoints?: list<PointGeometry|PointGeometryShape>|null,
  * }
  */
 final class RoutingRouteParams implements BaseModel
@@ -52,16 +48,16 @@ final class RoutingRouteParams implements BaseModel
     use SdkParams;
 
     /**
-     * Geographic coordinate as a JSON object with `lat` and `lng` fields.
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
      */
     #[Required]
-    public Destination $destination;
+    public PointGeometry $destination;
 
     /**
-     * Geographic coordinate as a JSON object with `lat` and `lng` fields.
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
      */
     #[Required]
-    public Origin $origin;
+    public PointGeometry $origin;
 
     /**
      * Response format for alternatives: json (default), geojson, csv, ndjson.
@@ -140,9 +136,9 @@ final class RoutingRouteParams implements BaseModel
     /**
      * Intermediate waypoints to visit in order (maximum 25).
      *
-     * @var list<Waypoint>|null $waypoints
+     * @var list<PointGeometry>|null $waypoints
      */
-    #[Optional(list: Waypoint::class, nullable: true)]
+    #[Optional(list: PointGeometry::class, nullable: true)]
     public ?array $waypoints;
 
     /**
@@ -169,18 +165,18 @@ final class RoutingRouteParams implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param Destination|DestinationShape $destination
-     * @param Origin|OriginShape $origin
+     * @param PointGeometry|PointGeometryShape $destination
+     * @param PointGeometry|PointGeometryShape $origin
      * @param Ev|EvShape|null $ev
      * @param Geometries|value-of<Geometries>|null $geometries
      * @param Mode|value-of<Mode>|null $mode
      * @param Overview|value-of<Overview>|null $overview
      * @param TrafficModel|value-of<TrafficModel>|null $trafficModel
-     * @param list<Waypoint|WaypointShape>|null $waypoints
+     * @param list<PointGeometry|PointGeometryShape>|null $waypoints
      */
     public static function with(
-        Destination|array $destination,
-        Origin|array $origin,
+        PointGeometry|array $destination,
+        PointGeometry|array $origin,
         ?string $format = null,
         ?int $alternatives = null,
         ?bool $annotations = null,
@@ -216,11 +212,11 @@ final class RoutingRouteParams implements BaseModel
     }
 
     /**
-     * Geographic coordinate as a JSON object with `lat` and `lng` fields.
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
      *
-     * @param Destination|DestinationShape $destination
+     * @param PointGeometry|PointGeometryShape $destination
      */
-    public function withDestination(Destination|array $destination): self
+    public function withDestination(PointGeometry|array $destination): self
     {
         $self = clone $this;
         $self['destination'] = $destination;
@@ -229,11 +225,11 @@ final class RoutingRouteParams implements BaseModel
     }
 
     /**
-     * Geographic coordinate as a JSON object with `lat` and `lng` fields.
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
      *
-     * @param Origin|OriginShape $origin
+     * @param PointGeometry|PointGeometryShape $origin
      */
-    public function withOrigin(Origin|array $origin): self
+    public function withOrigin(PointGeometry|array $origin): self
     {
         $self = clone $this;
         $self['origin'] = $origin;
@@ -376,7 +372,7 @@ final class RoutingRouteParams implements BaseModel
     /**
      * Intermediate waypoints to visit in order (maximum 25).
      *
-     * @param list<Waypoint|WaypointShape>|null $waypoints
+     * @param list<PointGeometry|PointGeometryShape>|null $waypoints
      */
     public function withWaypoints(?array $waypoints): self
     {

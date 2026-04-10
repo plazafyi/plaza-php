@@ -7,28 +7,21 @@ namespace Plaza\Services;
 use Plaza\Client;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\Core\Util;
+use Plaza\PlazaClientService\PointGeometry;
 use Plaza\RequestOptions;
 use Plaza\Routing\NearestResult;
 use Plaza\Routing\RouteResult;
-use Plaza\Routing\RoutingIsochronePostResponse;
+use Plaza\Routing\RoutingIsochroneParams\Mode;
 use Plaza\Routing\RoutingIsochroneResponse;
-use Plaza\Routing\RoutingMatrixParams\Mode;
-use Plaza\Routing\RoutingRouteParams\Destination;
 use Plaza\Routing\RoutingRouteParams\Ev;
 use Plaza\Routing\RoutingRouteParams\Geometries;
-use Plaza\Routing\RoutingRouteParams\Origin;
 use Plaza\Routing\RoutingRouteParams\Overview;
 use Plaza\Routing\RoutingRouteParams\TrafficModel;
-use Plaza\Routing\RoutingRouteParams\Waypoint;
 use Plaza\ServiceContracts\RoutingContract;
 
 /**
- * @phpstan-import-type DestinationShape from \Plaza\Routing\RoutingMatrixParams\Destination as DestinationShape1
- * @phpstan-import-type OriginShape from \Plaza\Routing\RoutingMatrixParams\Origin as OriginShape1
- * @phpstan-import-type DestinationShape from \Plaza\Routing\RoutingRouteParams\Destination
- * @phpstan-import-type OriginShape from \Plaza\Routing\RoutingRouteParams\Origin
  * @phpstan-import-type EvShape from \Plaza\Routing\RoutingRouteParams\Ev
- * @phpstan-import-type WaypointShape from \Plaza\Routing\RoutingRouteParams\Waypoint
+ * @phpstan-import-type PointGeometryShape from \Plaza\PlazaClientService\PointGeometry
  * @phpstan-import-type RequestOpts from \Plaza\RequestOptions
  */
 final class RoutingService implements RoutingContract
@@ -51,45 +44,27 @@ final class RoutingService implements RoutingContract
      *
      * Calculate an isochrone from a point
      *
-     * @param float $lat Latitude
-     * @param float $lng Longitude
-     * @param float $time Travel time in seconds (1-7200)
-     * @param string $format Response format: json (default), geojson, csv, ndjson
-     * @param string $mode Travel mode (auto, foot, bicycle)
-     * @param string $outputFields Comma-separated property fields to include
-     * @param bool $outputGeometry Include geometry (default true)
-     * @param string $outputInclude Extra computed fields: bbox, center
-     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
-     * @param float $outputSimplify Simplify geometry tolerance in meters
+     * @param PointGeometry|PointGeometryShape $geometry Body param: GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
+     * @param list<int> $time Body param: Travel time budgets in seconds. Each value produces one contour polygon.
+     * @param string $format Query param: Response format: json (default), geojson, csv, ndjson
+     * @param Mode|value-of<Mode> $mode Body param: Travel mode (default: `auto`)
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function isochrone(
-        float $lat,
-        float $lng,
-        float $time,
+        PointGeometry|array $geometry,
+        array $time,
         ?string $format = null,
-        ?string $mode = null,
-        ?string $outputFields = null,
-        ?bool $outputGeometry = null,
-        ?string $outputInclude = null,
-        ?int $outputPrecision = null,
-        ?float $outputSimplify = null,
+        Mode|string $mode = 'auto',
         RequestOptions|array|null $requestOptions = null,
     ): RoutingIsochroneResponse {
         $params = Util::removeNulls(
             [
-                'lat' => $lat,
-                'lng' => $lng,
+                'geometry' => $geometry,
                 'time' => $time,
                 'format' => $format,
                 'mode' => $mode,
-                'outputFields' => $outputFields,
-                'outputGeometry' => $outputGeometry,
-                'outputInclude' => $outputInclude,
-                'outputPrecision' => $outputPrecision,
-                'outputSimplify' => $outputSimplify,
             ],
         );
 
@@ -102,66 +77,13 @@ final class RoutingService implements RoutingContract
     /**
      * @api
      *
-     * Calculate an isochrone from a point
-     *
-     * @param float $lat Latitude
-     * @param float $lng Longitude
-     * @param float $time Travel time in seconds (1-7200)
-     * @param string $format Response format: json (default), geojson, csv, ndjson
-     * @param string $mode Travel mode (auto, foot, bicycle)
-     * @param string $outputFields Comma-separated property fields to include
-     * @param bool $outputGeometry Include geometry (default true)
-     * @param string $outputInclude Extra computed fields: bbox, center
-     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
-     * @param float $outputSimplify Simplify geometry tolerance in meters
-     * @param RequestOpts|null $requestOptions
-     *
-     * @throws APIException
-     */
-    public function isochronePost(
-        float $lat,
-        float $lng,
-        float $time,
-        ?string $format = null,
-        ?string $mode = null,
-        ?string $outputFields = null,
-        ?bool $outputGeometry = null,
-        ?string $outputInclude = null,
-        ?int $outputPrecision = null,
-        ?float $outputSimplify = null,
-        RequestOptions|array|null $requestOptions = null,
-    ): RoutingIsochronePostResponse {
-        $params = Util::removeNulls(
-            [
-                'lat' => $lat,
-                'lng' => $lng,
-                'time' => $time,
-                'format' => $format,
-                'mode' => $mode,
-                'outputFields' => $outputFields,
-                'outputGeometry' => $outputGeometry,
-                'outputInclude' => $outputInclude,
-                'outputPrecision' => $outputPrecision,
-                'outputSimplify' => $outputSimplify,
-            ],
-        );
-
-        // @phpstan-ignore-next-line argument.type
-        $response = $this->raw->isochronePost(params: $params, requestOptions: $requestOptions);
-
-        return $response->parse();
-    }
-
-    /**
-     * @api
-     *
      * Calculate a distance matrix between points
      *
-     * @param list<\Plaza\Routing\RoutingMatrixParams\Destination|DestinationShape1> $destinations Array of destination coordinates (max 50)
-     * @param list<\Plaza\Routing\RoutingMatrixParams\Origin|OriginShape1> $origins Array of origin coordinates (max 50)
+     * @param list<PointGeometry|PointGeometryShape> $destinations Array of destination coordinates as GeoJSON Points (max 50)
+     * @param list<PointGeometry|PointGeometryShape> $origins Array of origin coordinates as GeoJSON Points (max 50)
      * @param string $annotations Comma-separated list of annotations to include: `duration` (always included), `distance`. Example: `duration,distance`.
      * @param float|null $fallbackSpeed Fallback speed in km/h for pairs where no route exists. When set, unreachable pairs get estimated values instead of null.
-     * @param Mode|value-of<Mode> $mode Travel mode (default: `auto`)
+     * @param \Plaza\Routing\RoutingMatrixParams\Mode|value-of<\Plaza\Routing\RoutingMatrixParams\Mode> $mode Travel mode (default: `auto`)
      * @param RequestOpts|null $requestOptions
      *
      * @return array<string,mixed>
@@ -173,7 +95,7 @@ final class RoutingService implements RoutingContract
         array $origins,
         string $annotations = 'duration',
         ?float $fallbackSpeed = null,
-        Mode|string $mode = 'auto',
+        \Plaza\Routing\RoutingMatrixParams\Mode|string $mode = 'auto',
         RequestOptions|array|null $requestOptions = null,
     ): array {
         $params = Util::removeNulls(
@@ -197,35 +119,18 @@ final class RoutingService implements RoutingContract
      *
      * Snap a coordinate to the nearest road
      *
-     * @param float $lat Latitude
-     * @param float $lng Longitude
-     * @param string $outputFields Comma-separated property fields to include
-     * @param string $outputInclude Extra computed fields: bbox, distance, center
-     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
-     * @param int $radius Search radius in meters (default 500, max 5000)
+     * @param PointGeometry|PointGeometryShape $geometry GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
+     * @param float|null $radius Maximum search radius in meters (default: 100)
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function nearest(
-        float $lat,
-        float $lng,
-        ?string $outputFields = null,
-        ?string $outputInclude = null,
-        ?int $outputPrecision = null,
-        ?int $radius = null,
+        PointGeometry|array $geometry,
+        ?float $radius = null,
         RequestOptions|array|null $requestOptions = null,
     ): NearestResult {
-        $params = Util::removeNulls(
-            [
-                'lat' => $lat,
-                'lng' => $lng,
-                'outputFields' => $outputFields,
-                'outputInclude' => $outputInclude,
-                'outputPrecision' => $outputPrecision,
-                'radius' => $radius,
-            ],
-        );
+        $params = Util::removeNulls(['geometry' => $geometry, 'radius' => $radius]);
 
         // @phpstan-ignore-next-line argument.type
         $response = $this->raw->nearest(params: $params, requestOptions: $requestOptions);
@@ -236,51 +141,10 @@ final class RoutingService implements RoutingContract
     /**
      * @api
      *
-     * Snap a coordinate to the nearest road
-     *
-     * @param float $lat Latitude
-     * @param float $lng Longitude
-     * @param string $outputFields Comma-separated property fields to include
-     * @param string $outputInclude Extra computed fields: bbox, distance, center
-     * @param int $outputPrecision Coordinate decimal precision (1-15, default 7)
-     * @param int $radius Search radius in meters (default 500, max 5000)
-     * @param RequestOpts|null $requestOptions
-     *
-     * @throws APIException
-     */
-    public function nearestPost(
-        float $lat,
-        float $lng,
-        ?string $outputFields = null,
-        ?string $outputInclude = null,
-        ?int $outputPrecision = null,
-        ?int $radius = null,
-        RequestOptions|array|null $requestOptions = null,
-    ): NearestResult {
-        $params = Util::removeNulls(
-            [
-                'lat' => $lat,
-                'lng' => $lng,
-                'outputFields' => $outputFields,
-                'outputInclude' => $outputInclude,
-                'outputPrecision' => $outputPrecision,
-                'radius' => $radius,
-            ],
-        );
-
-        // @phpstan-ignore-next-line argument.type
-        $response = $this->raw->nearestPost(params: $params, requestOptions: $requestOptions);
-
-        return $response->parse();
-    }
-
-    /**
-     * @api
-     *
      * Calculate a route between two points
      *
-     * @param Destination|DestinationShape $destination body param: Geographic coordinate as a JSON object with `lat` and `lng` fields
-     * @param Origin|OriginShape $origin body param: Geographic coordinate as a JSON object with `lat` and `lng` fields
+     * @param PointGeometry|PointGeometryShape $destination Body param: GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
+     * @param PointGeometry|PointGeometryShape $origin Body param: GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
      * @param string $format Query param: Response format for alternatives: json (default), geojson, csv, ndjson
      * @param int $alternatives Body param: Number of alternative routes to return (0-3, default 0). When > 0, response is a FeatureCollection of route Features.
      * @param bool $annotations Body param: Include per-edge annotations (speed, duration) on the route (default: false)
@@ -292,14 +156,14 @@ final class RoutingService implements RoutingContract
      * @param Overview|value-of<Overview> $overview Body param: Level of geometry detail: `full` (all points), `simplified` (Douglas-Peucker), `false` (no geometry). Default: `full`.
      * @param bool $steps Body param: Include turn-by-turn navigation steps (default: false)
      * @param TrafficModel|value-of<TrafficModel>|null $trafficModel Body param: Traffic prediction model (only used when `depart_at` is set)
-     * @param list<Waypoint|WaypointShape>|null $waypoints Body param: Intermediate waypoints to visit in order (maximum 25)
+     * @param list<PointGeometry|PointGeometryShape>|null $waypoints Body param: Intermediate waypoints to visit in order (maximum 25)
      * @param RequestOpts|null $requestOptions
      *
      * @throws APIException
      */
     public function route(
-        Destination|array $destination,
-        Origin|array $origin,
+        PointGeometry|array $destination,
+        PointGeometry|array $origin,
         ?string $format = null,
         int $alternatives = 0,
         bool $annotations = false,

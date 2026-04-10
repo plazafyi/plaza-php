@@ -9,19 +9,17 @@ use Plaza\Core\Attributes\Required;
 use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
+use Plaza\PlazaClientService\PointGeometry;
 
 /**
  * Snap a coordinate to the nearest road.
  *
  * @see Plaza\Services\RoutingService::nearest()
  *
+ * @phpstan-import-type PointGeometryShape from \Plaza\PlazaClientService\PointGeometry
+ *
  * @phpstan-type RoutingNearestParamsShape = array{
- *   lat: float,
- *   lng: float,
- *   outputFields?: string|null,
- *   outputInclude?: string|null,
- *   outputPrecision?: int|null,
- *   radius?: int|null,
+ *   geometry: PointGeometry|PointGeometryShape, radius?: float|null
  * }
  */
 final class RoutingNearestParams implements BaseModel
@@ -31,53 +29,29 @@ final class RoutingNearestParams implements BaseModel
     use SdkParams;
 
     /**
-     * Latitude.
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
      */
     #[Required]
-    public float $lat;
+    public PointGeometry $geometry;
 
     /**
-     * Longitude.
+     * Maximum search radius in meters (default: 100).
      */
-    #[Required]
-    public float $lng;
-
-    /**
-     * Comma-separated property fields to include.
-     */
-    #[Optional]
-    public ?string $outputFields;
-
-    /**
-     * Extra computed fields: bbox, distance, center.
-     */
-    #[Optional]
-    public ?string $outputInclude;
-
-    /**
-     * Coordinate decimal precision (1-15, default 7).
-     */
-    #[Optional]
-    public ?int $outputPrecision;
-
-    /**
-     * Search radius in meters (default 500, max 5000).
-     */
-    #[Optional]
-    public ?int $radius;
+    #[Optional(nullable: true)]
+    public ?float $radius;
 
     /**
      * `new RoutingNearestParams()` is missing required properties by the API.
      *
      * To enforce required parameters use
      * ```
-     * RoutingNearestParams::with(lat: ..., lng: ...)
+     * RoutingNearestParams::with(geometry: ...)
      * ```
      *
      * Otherwise ensure the following setters are called
      *
      * ```
-     * (new RoutingNearestParams)->withLat(...)->withLng(...)
+     * (new RoutingNearestParams)->withGeometry(...)
      * ```
      */
     public function __construct()
@@ -89,87 +63,39 @@ final class RoutingNearestParams implements BaseModel
      * Construct an instance from the required parameters.
      *
      * You must use named parameters to construct any parameters with a default value.
+     *
+     * @param PointGeometry|PointGeometryShape $geometry
      */
     public static function with(
-        float $lat,
-        float $lng,
-        ?string $outputFields = null,
-        ?string $outputInclude = null,
-        ?int $outputPrecision = null,
-        ?int $radius = null,
+        PointGeometry|array $geometry,
+        ?float $radius = null
     ): self {
         $self = new self;
 
-        $self['lat'] = $lat;
-        $self['lng'] = $lng;
+        $self['geometry'] = $geometry;
 
-        null !== $outputFields && $self['outputFields'] = $outputFields;
-        null !== $outputInclude && $self['outputInclude'] = $outputInclude;
-        null !== $outputPrecision && $self['outputPrecision'] = $outputPrecision;
         null !== $radius && $self['radius'] = $radius;
 
         return $self;
     }
 
     /**
-     * Latitude.
+     * GeoJSON Point geometry per RFC 7946. Coordinates use [longitude, latitude] order. Optional third element is altitude in meters.
+     *
+     * @param PointGeometry|PointGeometryShape $geometry
      */
-    public function withLat(float $lat): self
+    public function withGeometry(PointGeometry|array $geometry): self
     {
         $self = clone $this;
-        $self['lat'] = $lat;
+        $self['geometry'] = $geometry;
 
         return $self;
     }
 
     /**
-     * Longitude.
+     * Maximum search radius in meters (default: 100).
      */
-    public function withLng(float $lng): self
-    {
-        $self = clone $this;
-        $self['lng'] = $lng;
-
-        return $self;
-    }
-
-    /**
-     * Comma-separated property fields to include.
-     */
-    public function withOutputFields(string $outputFields): self
-    {
-        $self = clone $this;
-        $self['outputFields'] = $outputFields;
-
-        return $self;
-    }
-
-    /**
-     * Extra computed fields: bbox, distance, center.
-     */
-    public function withOutputInclude(string $outputInclude): self
-    {
-        $self = clone $this;
-        $self['outputInclude'] = $outputInclude;
-
-        return $self;
-    }
-
-    /**
-     * Coordinate decimal precision (1-15, default 7).
-     */
-    public function withOutputPrecision(int $outputPrecision): self
-    {
-        $self = clone $this;
-        $self['outputPrecision'] = $outputPrecision;
-
-        return $self;
-    }
-
-    /**
-     * Search radius in meters (default 500, max 5000).
-     */
-    public function withRadius(int $radius): self
+    public function withRadius(?float $radius): self
     {
         $self = clone $this;
         $self['radius'] = $radius;
