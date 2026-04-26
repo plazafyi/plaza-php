@@ -13,7 +13,7 @@ The REST API documentation can be found on [docs.plaza.fyi](https://docs.plaza.f
 <!-- x-release-please-start-version -->
 
 ```
-composer require "plazafyi/plaza-php 0.1.0"
+composer require "plazafyi/plaza-php 0.2.0"
 ```
 
 <!-- x-release-please-end -->
