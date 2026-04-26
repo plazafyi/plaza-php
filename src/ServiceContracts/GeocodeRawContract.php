@@ -8,14 +8,11 @@ use Plaza\Core\Contracts\BaseResponse;
 use Plaza\Core\Exceptions\APIException;
 use Plaza\Geocode\AutocompleteResult;
 use Plaza\Geocode\GeocodeAutocompleteParams;
-use Plaza\Geocode\GeocodeAutocompletePostParams;
 use Plaza\Geocode\GeocodeBatchParams;
 use Plaza\Geocode\GeocodeBatchResponse;
 use Plaza\Geocode\GeocodeForwardParams;
-use Plaza\Geocode\GeocodeForwardPostParams;
 use Plaza\Geocode\GeocodeResult;
 use Plaza\Geocode\GeocodeReverseParams;
-use Plaza\Geocode\GeocodeReversePostParams;
 use Plaza\Geocode\ReverseGeocodeResult;
 use Plaza\RequestOptions;
 
@@ -36,21 +33,6 @@ interface GeocodeRawContract
      */
     public function autocomplete(
         array|GeocodeAutocompleteParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse;
-
-    /**
-     * @api
-     *
-     * @param array<string,mixed>|GeocodeAutocompletePostParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<AutocompleteResult>
-     *
-     * @throws APIException
-     */
-    public function autocompletePost(
-        array|GeocodeAutocompletePostParams $params,
         RequestOptions|array|null $requestOptions = null,
     ): BaseResponse;
 
@@ -87,21 +69,6 @@ interface GeocodeRawContract
     /**
      * @api
      *
-     * @param array<string,mixed>|GeocodeForwardPostParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<GeocodeResult>
-     *
-     * @throws APIException
-     */
-    public function forwardPost(
-        array|GeocodeForwardPostParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse;
-
-    /**
-     * @api
-     *
      * @param array<string,mixed>|GeocodeReverseParams $params
      * @param RequestOpts|null $requestOptions
      *
@@ -111,21 +78,6 @@ interface GeocodeRawContract
      */
     public function reverse(
         array|GeocodeReverseParams $params,
-        RequestOptions|array|null $requestOptions = null,
-    ): BaseResponse;
-
-    /**
-     * @api
-     *
-     * @param array<string,mixed>|GeocodeReversePostParams $params
-     * @param RequestOpts|null $requestOptions
-     *
-     * @return BaseResponse<ReverseGeocodeResult>
-     *
-     * @throws APIException
-     */
-    public function reversePost(
-        array|GeocodeReversePostParams $params,
         RequestOptions|array|null $requestOptions = null,
     ): BaseResponse;
 }

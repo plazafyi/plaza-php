@@ -9,7 +9,6 @@ use Plaza\Client;
 use Plaza\Core\Util;
 use Plaza\Datasets\Dataset;
 use Plaza\Datasets\DatasetList;
-use Plaza\PlazaClientService\FeatureCollection;
 
 /**
  * @internal
@@ -51,6 +50,7 @@ final class DatasetsTest extends TestCase
             description: 'description',
             license: 'license',
             sourceURL: 'https://example.com',
+            strictMode: true,
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -82,14 +82,5 @@ final class DatasetsTest extends TestCase
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertNull($result);
-    }
-
-    #[Test]
-    public function testFeatures(): void
-    {
-        $result = $this->client->datasets->features('id');
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(FeatureCollection::class, $result);
     }
 }

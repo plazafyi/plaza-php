@@ -11,7 +11,7 @@ use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
 
 /**
- * Create a new dataset (admin only).
+ * Create a new dataset.
  *
  * @see Plaza\Services\DatasetsService::create()
  *
@@ -22,6 +22,7 @@ use Plaza\Core\Contracts\BaseModel;
  *   description?: string|null,
  *   license?: string|null,
  *   sourceURL?: string|null,
+ *   strictMode?: bool|null,
  * }
  */
 final class DatasetCreateParams implements BaseModel
@@ -67,6 +68,12 @@ final class DatasetCreateParams implements BaseModel
     public ?string $sourceURL;
 
     /**
+     * Enable strict schema validation (default true).
+     */
+    #[Optional('strict_mode', nullable: true)]
+    public ?bool $strictMode;
+
+    /**
      * `new DatasetCreateParams()` is missing required properties by the API.
      *
      * To enforce required parameters use
@@ -97,6 +104,7 @@ final class DatasetCreateParams implements BaseModel
         ?string $description = null,
         ?string $license = null,
         ?string $sourceURL = null,
+        ?bool $strictMode = null,
     ): self {
         $self = new self;
 
@@ -107,6 +115,7 @@ final class DatasetCreateParams implements BaseModel
         null !== $description && $self['description'] = $description;
         null !== $license && $self['license'] = $license;
         null !== $sourceURL && $self['sourceURL'] = $sourceURL;
+        null !== $strictMode && $self['strictMode'] = $strictMode;
 
         return $self;
     }
@@ -173,6 +182,17 @@ final class DatasetCreateParams implements BaseModel
     {
         $self = clone $this;
         $self['sourceURL'] = $sourceURL;
+
+        return $self;
+    }
+
+    /**
+     * Enable strict schema validation (default true).
+     */
+    public function withStrictMode(?bool $strictMode): self
+    {
+        $self = clone $this;
+        $self['strictMode'] = $strictMode;
 
         return $self;
     }

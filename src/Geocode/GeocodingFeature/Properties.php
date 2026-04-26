@@ -136,7 +136,7 @@ final class Properties implements BaseModel
     public ?float $score;
 
     /**
-     * Result source indicating how the result was found: structured (exact field match), bm25 (full-text search), fuzzy (trigram similarity), address (reverse geocode address), place (reverse geocode POI), interpolation (estimated from neighboring addresses).
+     * Result source indicating how the result was found: structured (exact field match), fuzzy (trigram similarity), address (reverse geocode address), place (reverse geocode POI), interpolation (estimated from neighboring addresses).
      *
      * @var value-of<Source>|null $source
      */
@@ -422,7 +422,7 @@ final class Properties implements BaseModel
     }
 
     /**
-     * Result source indicating how the result was found: structured (exact field match), bm25 (full-text search), fuzzy (trigram similarity), address (reverse geocode address), place (reverse geocode POI), interpolation (estimated from neighboring addresses).
+     * Result source indicating how the result was found: structured (exact field match), fuzzy (trigram similarity), address (reverse geocode address), place (reverse geocode POI), interpolation (estimated from neighboring addresses).
      *
      * @param Source|value-of<Source>|null $source
      */

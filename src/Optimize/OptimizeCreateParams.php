@@ -10,17 +10,18 @@ use Plaza\Core\Concerns\SdkModel;
 use Plaza\Core\Concerns\SdkParams;
 use Plaza\Core\Contracts\BaseModel;
 use Plaza\Optimize\OptimizeCreateParams\Mode;
-use Plaza\Optimize\OptimizeCreateParams\Waypoint;
+use Plaza\PlazaClientService\MultiPointGeometry;
 
 /**
  * Optimize route through waypoints.
  *
  * @see Plaza\Services\OptimizeService::create()
  *
- * @phpstan-import-type WaypointShape from \Plaza\Optimize\OptimizeCreateParams\Waypoint
+ * @phpstan-import-type MultiPointGeometryShape from \Plaza\PlazaClientService\MultiPointGeometry
  *
  * @phpstan-type OptimizeCreateParamsShape = array{
- *   waypoints: list<Waypoint|WaypointShape>,
+ *   waypoints: MultiPointGeometry|MultiPointGeometryShape,
+ *   format?: string|null,
  *   mode?: null|Mode|value-of<Mode>,
  *   roundtrip?: bool|null,
  * }
@@ -32,12 +33,16 @@ final class OptimizeCreateParams implements BaseModel
     use SdkParams;
 
     /**
-     * Waypoints to visit in optimized order (2-50 points).
-     *
-     * @var list<Waypoint> $waypoints
+     * GeoJSON MultiPoint geometry per RFC 7946. An array of positions.
      */
-    #[Required(list: Waypoint::class)]
-    public array $waypoints;
+    #[Required]
+    public MultiPointGeometry $waypoints;
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    #[Optional]
+    public ?string $format;
 
     /**
      * Travel mode (default: `auto`).
@@ -77,18 +82,20 @@ final class OptimizeCreateParams implements BaseModel
      *
      * You must use named parameters to construct any parameters with a default value.
      *
-     * @param list<Waypoint|WaypointShape> $waypoints
+     * @param MultiPointGeometry|MultiPointGeometryShape $waypoints
      * @param Mode|value-of<Mode>|null $mode
      */
     public static function with(
-        array $waypoints,
+        MultiPointGeometry|array $waypoints,
+        ?string $format = null,
         Mode|string|null $mode = null,
-        ?bool $roundtrip = null
+        ?bool $roundtrip = null,
     ): self {
         $self = new self;
 
         $self['waypoints'] = $waypoints;
 
+        null !== $format && $self['format'] = $format;
         null !== $mode && $self['mode'] = $mode;
         null !== $roundtrip && $self['roundtrip'] = $roundtrip;
 
@@ -96,14 +103,25 @@ final class OptimizeCreateParams implements BaseModel
     }
 
     /**
-     * Waypoints to visit in optimized order (2-50 points).
+     * GeoJSON MultiPoint geometry per RFC 7946. An array of positions.
      *
-     * @param list<Waypoint|WaypointShape> $waypoints
+     * @param MultiPointGeometry|MultiPointGeometryShape $waypoints
      */
-    public function withWaypoints(array $waypoints): self
+    public function withWaypoints(MultiPointGeometry|array $waypoints): self
     {
         $self = clone $this;
         $self['waypoints'] = $waypoints;
+
+        return $self;
+    }
+
+    /**
+     * Response format: json (default), geojson, csv, ndjson.
+     */
+    public function withFormat(string $format): self
+    {
+        $self = clone $this;
+        $self['format'] = $format;
 
         return $self;
     }

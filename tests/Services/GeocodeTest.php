@@ -33,7 +33,7 @@ final class GeocodeTest extends TestCase
     #[Test]
     public function testAutocomplete(): void
     {
-        $result = $this->client->geocode->autocomplete(q: 'q');
+        $result = $this->client->geocode->autocomplete(q: '221B Bak');
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(AutocompleteResult::class, $result);
@@ -43,39 +43,13 @@ final class GeocodeTest extends TestCase
     public function testAutocompleteWithOptionalParams(): void
     {
         $result = $this->client->geocode->autocomplete(
-            q: 'q',
-            countryCode: 'country_code',
+            q: '221B Bak',
+            format: 'format',
+            countryCode: 'xx',
+            focus: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
             lang: 'lang',
-            lat: 0,
             layer: 'layer',
-            limit: 0,
-            lng: 0,
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(AutocompleteResult::class, $result);
-    }
-
-    #[Test]
-    public function testAutocompletePost(): void
-    {
-        $result = $this->client->geocode->autocompletePost(q: 'q');
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(AutocompleteResult::class, $result);
-    }
-
-    #[Test]
-    public function testAutocompletePostWithOptionalParams(): void
-    {
-        $result = $this->client->geocode->autocompletePost(
-            q: 'q',
-            countryCode: 'country_code',
-            lang: 'lang',
-            lat: 0,
-            layer: 'layer',
-            limit: 0,
-            lng: 0,
+            limit: 1,
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -103,7 +77,7 @@ final class GeocodeTest extends TestCase
     #[Test]
     public function testForward(): void
     {
-        $result = $this->client->geocode->forward(q: 'q');
+        $result = $this->client->geocode->forward(q: '221B Baker Street, London');
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(GeocodeResult::class, $result);
@@ -113,41 +87,13 @@ final class GeocodeTest extends TestCase
     public function testForwardWithOptionalParams(): void
     {
         $result = $this->client->geocode->forward(
-            q: 'q',
-            bbox: 'bbox',
-            countryCode: 'country_code',
+            q: '221B Baker Street, London',
+            format: 'format',
+            countryCode: 'xx',
+            focus: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
             lang: 'lang',
-            lat: 0,
             layer: 'layer',
-            limit: 0,
-            lng: 0,
-        );
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(GeocodeResult::class, $result);
-    }
-
-    #[Test]
-    public function testForwardPost(): void
-    {
-        $result = $this->client->geocode->forwardPost(q: 'q');
-
-        // @phpstan-ignore-next-line method.alreadyNarrowedType
-        $this->assertInstanceOf(GeocodeResult::class, $result);
-    }
-
-    #[Test]
-    public function testForwardPostWithOptionalParams(): void
-    {
-        $result = $this->client->geocode->forwardPost(
-            q: 'q',
-            bbox: 'bbox',
-            countryCode: 'country_code',
-            lang: 'lang',
-            lat: 0,
-            layer: 'layer',
-            limit: 0,
-            lng: 0,
+            limit: 1,
         );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
@@ -157,16 +103,24 @@ final class GeocodeTest extends TestCase
     #[Test]
     public function testReverse(): void
     {
-        $result = $this->client->geocode->reverse();
+        $result = $this->client->geocode->reverse(
+            geometry: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point']
+        );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(ReverseGeocodeResult::class, $result);
     }
 
     #[Test]
-    public function testReversePost(): void
+    public function testReverseWithOptionalParams(): void
     {
-        $result = $this->client->geocode->reversePost();
+        $result = $this->client->geocode->reverse(
+            geometry: ['coordinates' => [2.3522, 48.8566], 'type' => 'Point'],
+            format: 'format',
+            lang: 'lang',
+            limit: 1,
+            radius: 1,
+        );
 
         // @phpstan-ignore-next-line method.alreadyNarrowedType
         $this->assertInstanceOf(ReverseGeocodeResult::class, $result);

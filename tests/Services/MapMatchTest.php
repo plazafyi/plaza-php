@@ -31,10 +31,9 @@ final class MapMatchTest extends TestCase
     public function testMatch(): void
     {
         $result = $this->client->mapMatch->match(
-            coordinates: [
-                ['lat' => 48.8566, 'lng' => 2.3522],
-                ['lat' => 48.857, 'lng' => 2.353],
-                ['lat' => 48.8575, 'lng' => 2.354],
+            geometry: [
+                'coordinates' => [[2.3522, 48.8566], [2.353, 48.857], [2.354, 48.8575]],
+                'type' => 'LineString',
             ],
         );
 
@@ -46,10 +45,9 @@ final class MapMatchTest extends TestCase
     public function testMatchWithOptionalParams(): void
     {
         $result = $this->client->mapMatch->match(
-            coordinates: [
-                ['lat' => 48.8566, 'lng' => 2.3522],
-                ['lat' => 48.857, 'lng' => 2.353],
-                ['lat' => 48.8575, 'lng' => 2.354],
+            geometry: [
+                'coordinates' => [[2.3522, 48.8566], [2.353, 48.857], [2.354, 48.8575]],
+                'type' => 'LineString',
             ],
             radiuses: [0],
         );
