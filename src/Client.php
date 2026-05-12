@@ -7,6 +7,7 @@ namespace Plaza;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
 use Plaza\Core\BaseClient;
+use Plaza\Core\Implementation\StreamingHttpClient;
 use Plaza\Core\Util;
 use Plaza\Services\DatasetsService;
 use Plaza\Services\ElevationService;
@@ -98,6 +99,11 @@ class Client extends BaseClient
             ),
             $requestOptions,
         );
+
+        if (is_null($options->streamingTransporter)) {
+            assert(!is_null($options->transporter));
+            $options->streamingTransporter = new StreamingHttpClient($options->transporter);
+        }
 
         /** @var array<string, string|null> $headers */
         $headers = [
